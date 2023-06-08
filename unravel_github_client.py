@@ -214,25 +214,26 @@ def fetch_app_summary(unravel_url, unravel_token, clusterUId, appId):
         app_summary_map['Autoscale'] = 'Autoscale is not enabled.'
     return app_summary_map
 
-def get_pr_comments():
+def get_pr_description():
     headers = {
         'Authorization': f'Bearer {access_token}',
         'Accept': 'application/vnd.github.v3+json'
     }
 
-    url = f'https://api.github.com/repos/{repo_name}/pulls/{pr_number}/comments'
+    url = f'https://api.github.com/repos/{repo_name}/pulls/{pr_number}'
 
     response = requests.get(url, headers=headers)
     response.raise_for_status()
 
-    comments = [comment['body'] for comment in response.json()]
-    return comments
+    pr_data = response.json()
+    description = pr_data['body']
+    return description
 # %%
 def main():
 
     # description_json = json.loads(pr_json['description'])
     # job_run_list = get_job_runs_from_description(pr_id, description_json)
-    raw_description = get_pr_comments()
+    raw_description = get_pr_description()
     print(raw_description)
     description = " ".join(raw_description.splitlines())
     description = re.sub(cleanRe, "", description)
