@@ -227,8 +227,6 @@ def get_pr_description():
     
 
     pr_data = response.json()
-    print("$$$$$$$$$")
-    print(pr_data)
     description = pr_data['body']
     return description
 
@@ -238,7 +236,6 @@ def main():
     # description_json = json.loads(pr_json['description'])
     # job_run_list = get_job_runs_from_description(pr_id, description_json)
     raw_description = get_pr_description()
-    print(raw_description)
     description = " ".join(raw_description.splitlines())
     description = re.sub(cleanRe, "", description)
     job_run_list = get_job_runs_from_description_as_text(pr_number, description)
@@ -306,7 +303,7 @@ def main():
         unravel_comments = create_comments_with_markdown(job_run_result_list)
 
 
-        url = url = f"https://api.github.com/repos/{repository}/issues/{pr_number}/comments"
+        url = url = f"https://api.github.com/repos/{repo_name}/issues/{pr_number}/comments"
 
         headers = {
             "Authorization": f"Bearer {access_token}",
