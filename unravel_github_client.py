@@ -224,8 +224,11 @@ def get_pr_description():
 
     response = requests.get(url, headers=headers)
     response.raise_for_status()
+    
 
     pr_data = response.json()
+    print("$$$$$$$$$")
+    print(pr_data)
     description = pr_data['body']
     return description
 
