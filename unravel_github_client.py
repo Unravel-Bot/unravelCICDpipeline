@@ -226,6 +226,7 @@ def get_pr_description():
     response.raise_for_status()
 
     pr_data = response.json()
+    print(pr_data)
     description = pr_data['body']
     return description
 # %%
