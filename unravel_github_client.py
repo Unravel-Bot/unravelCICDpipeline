@@ -31,6 +31,7 @@ repo_name = os.getenv('GITHUB_REPOSITORY')
 access_token = os.getenv('GITHUB_TOKEN')
 unravel_url = os.getenv('UNRAVEL_URL')
 unravel_token = os.getenv('UNRAVEL_JWT_TOKEN')
+slack_webhook = os.getenv('SLACK_WEBHOOK')
 
 # %%
 def get_api(api_url, api_token):
@@ -230,13 +231,13 @@ def get_pr_description():
     description = pr_data['body']
     return description
 
-def send_markdown_to_slack(webhook_url, channel, message):
+def send_markdown_to_slack(channel, message):
     payload = {
         'channel': channel,
         'text': message,
         'mrkdwn': True
     }
-    response = requests.post(webhook_url, json=payload)
+    response = requests.post(slack_webhook, json=payload)
     if response.status_code == 200:
         print("Message sent successfully to Slack!")
     else:
@@ -325,10 +326,7 @@ def main():
         payload = {"body": '{}'.format(unravel_comments)}
         response = requests.post(url, headers=headers, json=payload)
         response.raise_for_status()
-        
-        # Replace with your webhook URL
-        webhook_url = 'https://hooks.slack.com/services/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'
-        # Replace with the desired channel or user ID
+     
         channel = '#cicd-notifications'
         # Replace with your Markdown-formatted message
         message = unravel_comments
