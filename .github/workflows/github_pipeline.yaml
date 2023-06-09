@@ -11,6 +11,13 @@ jobs:
     timeout-minutes: 30
 
     steps:
+      - name: Get PR URL
+        id: pr_url
+        run: |
+          pr_number=$(echo ${{ github.ref }} | awk -F'/' '{print $3}')
+          pr_url="https://github.com/${{ github.repository }}/pull/${pr_number}"
+          echo "PR_URL=${pr_url}" >> $GITHUB_ENV
+          
       - name: Checkout code
         uses: actions/checkout@v2
 
