@@ -187,6 +187,62 @@ def create_comments_with_markdown(job_run_result_list):
 
     return comments
 
+def create_comments_with_markdown_for_slack(job_run_result_list):
+    comments = ""
+    if job_run_result_list:
+        for r in job_run_result_list:
+            comments += "----\n"
+            comments += "*Workspace Id: {}, Job Id: {}, Run Id: {}*\n\n".format(
+                r["workspace_id"], r["job_id"], r["run_id"]
+            )
+            comments += "----\n"
+            comments += "*[Unravel URL]({})*\n".format(r["unravel_url"])
+            if r['app_summary']:
+                # Get all unique keys from the dictionaries while preserving the order
+                headers = []
+                for key in r['app_summary'].keys():
+                    if key not in headers:
+                        headers.append(key)
+
+                # Generate the header row
+                header_row = "| " + " | ".join(headers) + " |"
+
+                # Generate the separator row
+                separator_row = "| " + " | ".join(["---"] * len(headers)) + " |"
+
+                # Generate the data rows
+                data_rows = "\n".join(
+                    [
+                        "| " + " | ".join(str(r['app_summary'].get(h, "")) for h in headers)
+                    ]
+                )
+
+                # Combine the header, separator, and data rows
+                comments += "----\n"
+                comments += "*App Summary*  _(Estimated cost is the sum of DBUs and VM Cost)_\n"
+                comments += "----\n"
+                comments += header_row + "\n" + separator_row + "\n" + data_rows + "\n"
+            if r["unravel_insights"]:
+                comments += "\n*Unravel Insights*\n"
+                comments += "----\n"
+                for insight in r["unravel_insights"]:
+                    categories = insight["categories"]
+                    if categories:
+                        for k in categories.keys():
+                            instances = categories[k]["instances"]
+                            if instances:
+                                for i in instances:
+                                    if i["key"].upper() != "SPARKAPPTIMEREPORT":
+                                        comments += "*{}*\n".format(i["key"].upper())
+                                        comments += "_{}_ \n".format(i['title'])
+                                        comments += "Details: {}\n".format(i["events"])
+                                        comments += "Actions: {}\n".format(i['actions'])
+                                        comments += "\n"
+            comments += "\n"
+
+    return comments
+
+
 
 def fetch_app_summary(unravel_url, unravel_token, clusterUId, appId):
     app_summary_map = {}
@@ -329,7 +385,7 @@ def main():
      
         channel = '#cicd-notifications'
         # Replace with your Markdown-formatted message
-        message = unravel_comments
+        message = create_comments_with_markdown_for_slack(job_run_result_list)
 
         send_markdown_to_slack(channel, message)
         
