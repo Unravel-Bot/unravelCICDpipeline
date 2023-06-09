@@ -394,11 +394,11 @@ def main():
      
         channel = '#cicd-notifications'
         # Replace with your Markdown-formatted message
-        message = 'Unravel has insights for the {} raised by {} to merge {} from {} to {}. Click this link for further details {}'.format(pr_url,)
+        message = 'Unravel has insights for the {} raised by {} to merge {} from {} to {}. Click this link for further details {}'.format(pr_url,pr_user_email,pr_commit_id,pr_base_branch,pr_target_branch,pr_url)
 
         send_markdown_to_slack(channel, message)
         
-        raise_jira_ticket(message)
+#         raise_jira_ticket(message)
         
     else:
         print("Nothing to do without Unravel integration")
