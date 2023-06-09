@@ -331,7 +331,7 @@ def main():
         # Replace with your Markdown-formatted message
         message = unravel_comments
 
-        send_markdown_to_slack(webhook_url, channel, message)
+        send_markdown_to_slack(channel, message)
         
     else:
         print("Nothing to do without Unravel integration")
