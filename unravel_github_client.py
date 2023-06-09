@@ -230,6 +230,19 @@ def get_pr_description():
     description = pr_data['body']
     return description
 
+def send_markdown_to_slack(webhook_url, channel, message):
+    payload = {
+        'channel': channel,
+        'text': message,
+        'mrkdwn': True
+    }
+    response = requests.post(webhook_url, json=payload)
+    if response.status_code == 200:
+        print("Message sent successfully to Slack!")
+    else:
+        print(f"Failed to send message to Slack. Error: {response.text}")
+
+
 # %%
 def main():
 
@@ -312,6 +325,16 @@ def main():
         payload = {"body": '{}'.format(unravel_comments)}
         response = requests.post(url, headers=headers, json=payload)
         response.raise_for_status()
+        
+        # Replace with your webhook URL
+        webhook_url = 'https://hooks.slack.com/services/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'
+        # Replace with the desired channel or user ID
+        channel = '#cicd-notifications'
+        # Replace with your Markdown-formatted message
+        message = unravel_comments
+
+        send_markdown_to_slack(webhook_url, channel, message)
+        
     else:
         print("Nothing to do without Unravel integration")
         sys.exit(0)
