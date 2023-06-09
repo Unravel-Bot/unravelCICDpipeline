@@ -26,12 +26,24 @@ events_map = {
 "SLA":"Insights to make this app meet SLA",
 }
 
+# Git specific variables
 pr_number = os.getenv('PR_NUMBER')
 repo_name = os.getenv('GITHUB_REPOSITORY')
 access_token = os.getenv('GITHUB_TOKEN')
+
+# Unravel specific variables
 unravel_url = os.getenv('UNRAVEL_URL')
 unravel_token = os.getenv('UNRAVEL_JWT_TOKEN')
+
+# Slack specific variables
 slack_webhook = os.getenv('SLACK_WEBHOOK')
+
+# Jira specific variables
+domain = os.getenv('JIRA_DOMAIN')
+email = os.getenv('JIRA_EMAIL')
+project_key = os.getenv('JIRA_PROJECT_KEY')
+api_token = os.getenv('JIRA_API_TOKEN')
+
 
 # %%
 def get_api(api_url, api_token):
@@ -299,6 +311,55 @@ def send_markdown_to_slack(channel, message):
     else:
         print(f"Failed to send message to Slack. Error: {response.text}")
 
+def raise_jira_ticket(message):
+    # API endpoint for creating an issue
+    url = f'https://{domain}/rest/api/3/issue'
+
+    # Headers and authentication
+    headers = {
+    'Content-Type': 'application/json'
+    }
+    auth = (email, api_token)
+
+    # Issue data
+    issue_data = {
+    'fields': {
+        'project': {
+            'key': project_key
+        },
+        'summary': 'Issue summary',
+        'description': {
+            'type': 'doc',
+            'version': 1,
+            'content': [
+                {
+                    'type': 'paragraph',
+                    'content': [
+                        {
+                            'type': 'text',
+                            'text': message
+                        }
+                    ]
+                }
+            ]
+        },
+        'issuetype': {
+            'name': 'Task'
+        }
+    }
+    }
+
+    # Create the issue
+    response = requests.post(url, headers=headers, auth=auth, data=json.dumps(issue_data))
+
+    # Check the response
+    if response.status_code == 201:
+    print('Issue created successfully!')
+    issue_key = response.json()['key']
+    print(f'Issue key: {issue_key}')
+    else:
+    print('Failed to create issue. Response:', response.text)
+
 
 # %%
 def main():
@@ -388,6 +449,8 @@ def main():
         message = create_comments_with_markdown_for_slack(job_run_result_list)
 
         send_markdown_to_slack(channel, message)
+        
+        raise_jira_ticket(message)
         
     else:
         print("Nothing to do without Unravel integration")
