@@ -354,11 +354,11 @@ def raise_jira_ticket(message):
 
     # Check the response
     if response.status_code == 201:
-    print('Issue created successfully!')
-    issue_key = response.json()['key']
-    print(f'Issue key: {issue_key}')
+        print('Issue created successfully!')
+        issue_key = response.json()['key']
+        print(f'Issue key: {issue_key}')
     else:
-    print('Failed to create issue. Response:', response.text)
+        print('Failed to create issue. Response:', response.text)
 
 
 # %%
