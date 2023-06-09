@@ -34,3 +34,7 @@ jobs:
           UNRAVEL_URL: ${{ secrets.UNRAVEL_URL }}
           UNRAVEL_JWT_TOKEN: ${{ secrets.UNRAVEL_JWT_TOKEN }}
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          JIRA_DOMAIN: ${{ secrets.JIRA_DOMAIN }}
+          JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+          JIRA_PROJECT_KEY: ${{ secrets.JIRA_PROJECT_KEY }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
