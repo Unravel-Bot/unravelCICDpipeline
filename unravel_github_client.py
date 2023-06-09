@@ -31,6 +31,10 @@ pr_number = os.getenv('PR_NUMBER')
 repo_name = os.getenv('GITHUB_REPOSITORY')
 access_token = os.getenv('GITHUB_TOKEN')
 pr_url = os.getenv('PR_URL')
+pr_user_email = os.getenv('PR_USER_EMAIL')
+pr_commit_id = os.getenv('COMMIT_SHA')
+pr_base_branch = os.getenv('BASE_BRANCH')
+pr_target_branch = os.getenv('TARGET_BRANCH')
 
 # Unravel specific variables
 unravel_url = os.getenv('UNRAVEL_URL')
@@ -390,7 +394,8 @@ def main():
      
         channel = '#cicd-notifications'
         # Replace with your Markdown-formatted message
-        message = pr_url
+        message = 'Unravel has insights for the {} raised by {} to merge {} from {} to {}. Click this link for further details {}'.format(pr_url,)
+
         send_markdown_to_slack(channel, message)
         
         raise_jira_ticket(message)
