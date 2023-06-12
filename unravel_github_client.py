@@ -9,7 +9,6 @@ import os
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-
 # %%
 # DBRKS URL pattern
 pattern = r"^https://adb-([0-9]+).([0-9]+).azuredatabricks.net/\?o=([0-9]+)#job/([0-9]+)/run/([0-9]+)$"
@@ -20,10 +19,10 @@ app_summary_map = {}
 app_summary_map_list = []
 
 events_map = {
-"efficiency":"Insights to make this app resource/cost efficient",
-"appFailure":"Insights to help with failure analysis",
-"Bottlenecks":"Insights to make this app faster",
-"SLA":"Insights to make this app meet SLA",
+    "efficiency": "Insights to make this app resource/cost efficient",
+    "appFailure": "Insights to help with failure analysis",
+    "Bottlenecks": "Insights to make this app faster",
+    "SLA": "Insights to make this app meet SLA",
 }
 
 # Git specific variables
@@ -65,7 +64,7 @@ def check_response_on_get(json_val):
 
 # %%
 def search_summary_by_globalsearchpattern(
-    base_url, api_token, start_time, end_time, gsp
+        base_url, api_token, start_time, end_time, gsp
 ):
     api_url = base_url + "/api/v1/ds/api/v1/databricks/runs/" + gsp + "/tasks/summary"
     print("URL: " + api_url)
@@ -154,7 +153,7 @@ def create_comments_with_markdown(job_run_result_list):
             comments += "<details>\n"
             # comments += "<img src='https://www.unraveldata.com/wp-content/themes/unravel-child/src/images/unLogo.svg' alt='Logo'>\n\n"
             comments += "<summary> <img src='https://www.unraveldata.com/wp-content/themes/unravel-child/src/images/unLogo.svg' alt='Logo'> <b>Workspace Id: {}, Job Id: {}, Run Id: {}</b></summary>\n\n".format(
-                r["workspace_id"],r["job_id"], r["run_id"]
+                r["workspace_id"], r["job_id"], r["run_id"]
             )
             comments += "----\n"
             comments += "#### [{}]({})\n".format('Unravel url', r["unravel_url"])
@@ -204,14 +203,15 @@ def create_comments_with_markdown(job_run_result_list):
 
     return comments
 
+
 def fetch_app_summary(unravel_url, unravel_token, clusterUId, appId):
     app_summary_map = {}
     autoscale_dict = {}
     summary_dict = search_summary(unravel_url, unravel_token, clusterUId, appId)
     summary_dict = summary_dict["annotation"]
-    url = '{}/#/app/application/spark?execId={}&clusterUid={}'.format(unravel_url,appId,clusterUId)
+    url = '{}/#/app/application/spark?execId={}&clusterUid={}'.format(unravel_url, appId, clusterUId)
     app_summary_map["Spark App"] = '[{}]({})'.format(appId, url)
-    cluster_url = '{}/#/compute/cluster_summary?cluster_uid={}&app_id={}'.format(unravel_url,clusterUId,appId)
+    cluster_url = '{}/#/compute/cluster_summary?cluster_uid={}&app_id={}'.format(unravel_url, clusterUId, appId)
     app_summary_map["Cluster"] = '[{}]({})'.format(clusterUId, cluster_url)
     app_summary_map["Estimated cost"] = '$ {}'.format(summary_dict["cents"] + summary_dict["dbuCost"])
     runinfo = json.loads(summary_dict["runInfo"])
@@ -231,6 +231,7 @@ def fetch_app_summary(unravel_url, unravel_token, clusterUId, appId):
         app_summary_map['Autoscale'] = 'Autoscale is not enabled.'
     return app_summary_map
 
+
 def get_pr_description():
     headers = {
         'Authorization': f'Bearer {access_token}',
@@ -241,11 +242,11 @@ def get_pr_description():
 
     response = requests.get(url, headers=headers)
     response.raise_for_status()
-    
 
     pr_data = response.json()
     description = pr_data['body']
     return description
+
 
 def send_markdown_to_slack(channel, message):
     payload = {
@@ -259,42 +260,43 @@ def send_markdown_to_slack(channel, message):
     else:
         print(f"Failed to send message to Slack. Error: {response.text}")
 
+
 def raise_jira_ticket(message):
     # API endpoint for creating an issue
     url = f'https://{domain}/rest/api/3/issue'
 
     # Headers and authentication
     headers = {
-    'Content-Type': 'application/json'
+        'Content-Type': 'application/json'
     }
     auth = (email, api_token)
 
     # Issue data
     issue_data = {
-    'fields': {
-        'project': {
-            'key': project_key
-        },
-        'summary': 'Issue summary',
-        'description': {
-            'type': 'doc',
-            'version': 1,
-            'content': [
-                {
-                    'type': 'paragraph',
-                    'content': [
-                        {
-                            'type': 'text',
-                            'text': message
-                        }
-                    ]
-                }
-            ]
-        },
-        'issuetype': {
-            'name': 'Task'
+        'fields': {
+            'project': {
+                'key': project_key
+            },
+            'summary': 'Issue summary',
+            'description': {
+                'type': 'doc',
+                'version': 1,
+                'content': [
+                    {
+                        'type': 'paragraph',
+                        'content': [
+                            {
+                                'type': 'text',
+                                'text': message
+                            }
+                        ]
+                    }
+                ]
+            },
+            'issuetype': {
+                'name': 'Task'
+            }
         }
-    }
     }
 
     # Create the issue
@@ -309,9 +311,56 @@ def raise_jira_ticket(message):
         print('Failed to create issue. Response:', response.text)
 
 
+def create_jira_message(job_run_result_list):
+    '''This Issue was automatically created by Unravel to follow up on the insights generated for the runs of the jobs mentioned in the description of <PR_ID> raised by <user_id> to merge <commit_id> from <base_branch> to <target_branch>
+
+
+Details of the dbx job
+
+Job ID: <dbx_job_link, from the description>, <unravel_dbx_job_link>
+Cluster ID: <unravel_cluster_page_link>
+Spark App: <unravel_spark_app_link>
+Estimated Cost
+Tags
+AutoScaling Info
+
+The following insights were generated
+<List Unique Event Names>
+
+For detailed information, click here <Hyperlink to pr>. '''
+    '''pr_number = os.getenv('PR_NUMBER')
+repo_name = os.getenv('GITHUB_REPOSITORY')
+access_token = os.getenv('GITHUB_TOKEN')
+pr_url = os.getenv('PR_URL')
+pr_user_email = os.getenv('PR_USER_EMAIL')
+pr_commit_id = os.getenv('COMMIT_SHA')
+pr_base_branch = os.getenv('BASE_BRANCH')
+pr_target_branch = os.getenv('TARGET_BRANCH')      r["workspace_id"], r["job_id"], r["run_id"]'''
+    comment = "This Issue was automatically created by Unravel to follow up on the insights generated for the runs of the jobs mentioned in the description of {} raised by {} to merge {} from {} to {} \n\n".format(pr_number,pr_user_email,pr_commit_id,pr_base_branch,pr_target_branch)
+    if job_run_result_list:
+        for r in job_run_result_list:
+            comment += "Details of the dbx job\n\n"
+            comment += "Job ID: [{}]({})\n".format('Unravel url', r["unravel_url"])
+            comment += "Cluster ID: {}\n".format(r['app_summary']['Cluster'])
+            comment += "Spark App: {}\n".format(r['app_summary']['Spark App'])
+            comment += "Estimated Cost: {}\n".format(r['app_summary']['Estimated cost'])
+            comment += "Tags: {}\n".format(r['app_summary']['Tags'])
+            comment += "AutoScaling Info: {}\n".format(r['app_summary']['Autoscale'])
+            comment += "\n\n"
+            comment += "The following insights were generated\n\n"
+            if r["unravel_insights"]:
+                for insight in r["unravel_insights"]:
+                    categories = insight["categories"]
+                    if categories:
+                        for k in categories.keys():
+                            instances = categories[k]["instances"]
+                            if instances:
+                                for i in instances:
+                                    if i["key"].upper() != "SPARKAPPTIMEREPORT":
+                                        comment += "{}: {} \n".format(i["key"].upper(), events_map[i['key']])
+
 # %%
 def main():
-
     # description_json = json.loads(pr_json['description'])
     # job_run_list = get_job_runs_from_description(pr_id, description_json)
     raw_description = get_pr_description()
@@ -381,7 +430,6 @@ def main():
         # unravel_comments = re.sub(cleanRe, '', json.dumps(job_run_result_list, indent=4))
         unravel_comments = create_comments_with_markdown(job_run_result_list)
 
-
         url = url = f"https://api.github.com/repos/{repo_name}/issues/{pr_number}/comments"
 
         headers = {
@@ -391,15 +439,18 @@ def main():
         payload = {"body": '{}'.format(unravel_comments)}
         response = requests.post(url, headers=headers, json=payload)
         response.raise_for_status()
-     
+
         channel = '#cicd-notifications'
         # Replace with your Markdown-formatted message
-        message = 'Unravel has insights for the {} raised by {} to merge {} from {} to {}. Click this link for further details {}'.format(pr_url,pr_user_email,pr_commit_id,pr_base_branch,pr_target_branch,pr_url)
+        message = 'Unravel has insights for the {} raised by {} to merge {} from {} to {}. Click this link for further details {}'.format(
+            pr_number, pr_user_email, pr_commit_id, pr_base_branch, pr_target_branch, pr_url)
 
         send_markdown_to_slack(channel, message)
-        
-#         raise_jira_ticket(message)
-        
+
+        create_jira_message(job_run_result_list)
+
+        raise_jira_ticket(message)
+
     else:
         print("Nothing to do without Unravel integration")
         sys.exit(0)
