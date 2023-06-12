@@ -358,6 +358,7 @@ pr_target_branch = os.getenv('TARGET_BRANCH')      r["workspace_id"], r["job_id"
                                 for i in instances:
                                     if i["key"].upper() != "SPARKAPPTIMEREPORT":
                                         comment += "{}: {} \n".format(i["key"].upper(), events_map[i['key']])
+    return comment
 
 # %%
 def main():
