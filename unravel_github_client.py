@@ -443,7 +443,7 @@ def main():
 
         channel = '#cicd-notifications'
         # Replace with your Markdown-formatted message
-        message = 'Unravel has insights for the pr {} raised by {} to merge {} from {} to {}. Click this link for further details {}'.format(
+        message = 'Unravel has insights for the pr number {} raised by {} to merge {} from {} to {}. Click this link for further details {}'.format(
             pr_number, pr_user_email, pr_commit_id, pr_base_branch, pr_target_branch, pr_url)
 
         send_markdown_to_slack(channel, message)
