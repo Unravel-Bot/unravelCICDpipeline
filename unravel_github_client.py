@@ -311,15 +311,15 @@ def raise_jira_ticket(message):
         print('Failed to create issue. Response:', response.text)
 
 
-def create_jira_message(job_run_result_list):
-
-    comment = "This Issue was automatically created by Unravel to follow up on the insights generated for the runs of the jobs mentioned in the description of {} raised by {} to merge {} from {} to {} \n\n".format(pr_number,pr_user_email,pr_commit_id,pr_base_branch,pr_target_branch)
+def create_jira_message(job_run_result_list, link):
+    pattern = r'\((.*?)\)'
+    comment = "This Issue was automatically created by Unravel to follow up on the insights generated for the runs of the jobs mentioned in the description of pr number {} was raised to merge {} from {} to {} \n".format(pr_number,pr_user_email,pr_commit_id,pr_base_branch,pr_target_branch)
     if job_run_result_list:
         for r in job_run_result_list:
-            comment += "\n\n Details of the dbx job\n"
+            comment += "\nDetails of the dbx job {}\n".format(r["job_id"])
             comment += "Job ID: {}\n".format(r["unravel_url"])
-            comment += "Cluster ID: {}\n".format(r['app_summary']['Cluster'])
-            comment += "Spark App: {}\n".format(r['app_summary']['Spark App'])
+            comment += "Cluster ID: {}\n".format(re.search(pattern, r['app_summary']['Cluster']).group(1))
+            comment += "Spark App: {}\n".format(re.search(pattern, r['app_summary']['Spark App']).group(1))
             comment += "Estimated Cost: {}\n".format(r['app_summary']['Estimated cost'])
             comment += "Tags: {}\n".format(r['app_summary']['Tags'])
             comment += "AutoScaling Info: {}\n".format(r['app_summary']['Autoscale'])
@@ -335,6 +335,7 @@ def create_jira_message(job_run_result_list):
                                 for i in instances:
                                     if i["key"].upper() != "SPARKAPPTIMEREPORT":
                                         comment += "{}: {} \n".format(i["key"].upper(), events_map[i['key']])
+            comment += '\n\n For more detailed information clink this link {}'.format(link)
     return comment
 
 # %%
@@ -420,12 +421,12 @@ def main():
 
         channel = '#cicd-notifications'
         # Replace with your Markdown-formatted message
-        message = 'Unravel has insights for the pr ticket {} raised by {} to merge {} from {} to {}. Click this link for further details {}'.format(
+        message = 'Unravel has insights for the pr number {} which was raised to merge {} from {} to {}. Click this link for further details {}'.format(
             pr_number, pr_user_email, pr_commit_id, pr_base_branch, pr_target_branch, pr_url)
 
         send_markdown_to_slack(channel, message)
 
-        jira_message = create_jira_message(job_run_result_list)
+        jira_message = create_jira_message(job_run_result_list, pr_url)
 
         raise_jira_ticket(jira_message)
 
