@@ -289,7 +289,7 @@ def raise_jira_ticket(message):
                         'content': [
                             {
                                 'type': 'text',
-                                'text': html_to_jira_wiki(message)
+                                'text': message
                             }
                         ]
                     }
@@ -371,8 +371,8 @@ def create_jira_message(job_run_result_list, link):
                                         comment += "{}: {} <br>".format(i["key"].upper(), events_map[i['key']])
 
     comment += '<br><br>For more detailed information, click this link: {}'.format(link)
-    comment = html.escape(comment)  # Escape special characters
-    comment = "<p>" + comment.replace("\n", "<br>") + "</p>"  # Add <p> tags and replace newlines with <br>
+    comment = html_to_jira_wiki(comment)  # Escape special characters
+    #comment = "<p>" + comment.replace("\n", "<br>") + "</p>"  # Add <p> tags and replace newlines with <br>
 
     return comment
 
