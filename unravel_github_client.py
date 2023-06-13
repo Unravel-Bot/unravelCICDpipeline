@@ -282,6 +282,9 @@ def raise_jira_ticket(message):
 
 
 def create_jira_message(job_run_result_list, link):
+    print("$$$$$$$$$$")
+    print(job_run_result_list)
+    print("$$$$$$$$$$$4")
     comments = ""
     if job_run_result_list:
         for r in job_run_result_list:
