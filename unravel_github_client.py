@@ -441,7 +441,7 @@ def main():
 
         jira_message = create_jira_message(job_run_result_list)
 
-        raise_jira_ticket(unravel_comments)
+        raise_jira_ticket(jira_message)
 
     else:
         print("Nothing to do without Unravel integration")
