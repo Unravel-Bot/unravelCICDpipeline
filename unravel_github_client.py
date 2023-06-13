@@ -7,7 +7,7 @@ import getopt
 import urllib3
 import os
 import html
-from html2jirawiki import html_to_jira_wiki
+from jira import JIRA
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -264,53 +264,71 @@ def send_markdown_to_slack(channel, message):
 
 
 def raise_jira_ticket(message):
-    # API endpoint for creating an issue
-    url = f'https://{domain}/rest/api/3/issue'
 
-    # Headers and authentication
-    headers = {
-        'Content-Type': 'application/json'
-    }
-    auth = (email, api_token)
 
-    # Issue data
-    issue_data = {
-        'fields': {
-            'project': {
-                'key': project_key
-            },
-            'summary': 'Issue summary',
-            'description': {
-                'type': 'doc',
-                'version': 1,
-                'content': [
-                    {
-                        'type': 'paragraph',
-                        'content': [
-                            {
-                                'type': 'text',
-                                'text': message
-                            }
-                        ]
-                    }
-                ]
-            },
-            'issuetype': {
-                'name': 'Task'
-            }
-        }
-    }
+    # Connect to Jira
+    jira = JIRA(server='https://{}'.format(domain), basic_auth=(email, api_token))
+
+    # Generate comments in Markdown format
+    comments = create_comments_with_markdown(message)
 
     # Create the issue
-    response = requests.post(url, headers=headers, auth=auth, data=json.dumps(issue_data))
+    issue_data = {
+        'project': {'key': 'CICD'},
+        'summary': 'Issue summary',
+        'description': comments,
+        'issuetype': {'name': 'Task'}
+    }
 
-    # Check the response
-    if response.status_code == 201:
-        print('Issue created successfully!')
-        issue_key = response.json()['key']
-        print(f'Issue key: {issue_key}')
-    else:
-        print('Failed to create issue. Response:', response.text)
+    new_issue = jira.create_issue(fields=issue_data)
+    
+    # # API endpoint for creating an issue
+    # url = f'https://{domain}/rest/api/3/issue'
+    # 
+    # # Headers and authentication
+    # headers = {
+    #     'Content-Type': 'application/json'
+    # }
+    # auth = (email, api_token)
+    # 
+    # # Issue data
+    # issue_data = {
+    #     'fields': {
+    #         'project': {
+    #             'key': project_key
+    #         },
+    #         'summary': 'Issue summary',
+    #         'description': {
+    #             'type': 'doc',
+    #             'version': 1,
+    #             'content': [
+    #                 {
+    #                     'type': 'paragraph',
+    #                     'content': [
+    #                         {
+    #                             'type': 'text',
+    #                             'text': message
+    #                         }
+    #                     ]
+    #                 }
+    #             ]
+    #         },
+    #         'issuetype': {
+    #             'name': 'Task'
+    #         }
+    #     }
+    # }
+    # 
+    # # Create the issue
+    # response = requests.post(url, headers=headers, auth=auth, data=json.dumps(issue_data))
+    # 
+    # # Check the response
+    # if response.status_code == 201:
+    #     print('Issue created successfully!')
+    #     issue_key = response.json()['key']
+    #     print(f'Issue key: {issue_key}')
+    # else:
+    #     print('Failed to create issue. Response:', response.text)
 
 
 def create_jira_message(job_run_result_list, link):
@@ -344,7 +362,7 @@ def create_jira_message(job_run_result_list, link):
 #     pattern = r'\((.*?)\)'
 #     comment = "This Issue was automatically created by Unravel to follow up on the insights generated for the runs of the jobs mentioned in the description of pr number {} was raised to merge {} from {} to {} <br>".format(
 #         pr_number, pr_commit_id, pr_base_branch, pr_target_branch)
-# 
+#
 #     if job_run_result_list:
 #         for r in job_run_result_list:
 #             comment += "<br>Details of the dbx job {}<br><br>".format(r["job_id"])
@@ -356,24 +374,24 @@ def create_jira_message(job_run_result_list, link):
 #             comment += "AutoScaling Info: {}<br>".format(r['app_summary']['Autoscale'])
 #             comment += "<br>"
 #             comment += "The following insights were generated<br><br>"
-# 
+#
 #             if r["unravel_insights"]:
 #                 for insight in r["unravel_insights"]:
 #                     categories = insight["categories"]
-# 
+#
 #                     if categories:
 #                         for k in categories.keys():
 #                             instances = categories[k]["instances"]
-# 
+#
 #                             if instances:
 #                                 for i in instances:
 #                                     if i["key"].upper() != "SPARKAPPTIMEREPORT":
 #                                         comment += "{}: {} <br>".format(i["key"].upper(), events_map[i['key']])
-# 
+#
 #     comment += '<br><br>For more detailed information, click this link: {}'.format(link)
 #     comment = html.escape(comment)  # Escape special characters
 #     comment = "<p>" + comment.replace("\n", "<br>") + "</p>"  # Add <p> tags and replace newlines with <br>
-# 
+#
 #     return comment
 
 
@@ -467,7 +485,7 @@ def main():
 
         jira_message = create_jira_message(job_run_result_list, pr_url)
 
-        raise_jira_ticket(jira_message)
+        raise_jira_ticket(unravel_comments)
 
     else:
         print("Nothing to do without Unravel integration")
