@@ -7,6 +7,8 @@ import getopt
 import urllib3
 import os
 import html
+from html2jirawiki import html_to_jira_wiki
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # %%
@@ -287,7 +289,7 @@ def raise_jira_ticket(message):
                         'content': [
                             {
                                 'type': 'text',
-                                'text': message
+                                'text': html_to_jira_wiki(message)
                             }
                         ]
                     }
