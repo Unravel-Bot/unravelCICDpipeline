@@ -289,7 +289,7 @@ def raise_jira_ticket(message):
                         'content': [
                             {
                                 'type': 'text',
-                                'text': html_to_jira_wiki(message)
+                                'text': message
                             }
                         ]
                     }
