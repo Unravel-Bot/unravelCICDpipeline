@@ -8,6 +8,8 @@ import urllib3
 import os
 import html
 from jira import JIRA
+from bs4 import BeautifulSoup
+import markdown
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -264,8 +266,6 @@ def send_markdown_to_slack(channel, message):
 
 
 def raise_jira_ticket(message):
-
-
     # Connect to Jira
     jira = JIRA(server='https://{}'.format(domain), basic_auth=(email, api_token))
 
@@ -279,31 +279,52 @@ def raise_jira_ticket(message):
 
     new_issue = jira.create_issue(fields=issue_data)
 
+    print(new_issue)
 
 
-def create_jira_message(job_run_result_list, link):
-    print("$$$$$$$$$$")
-    print(job_run_result_list)
-    print("$$$$$$$$$$$4")
+def create_markdown_from_html(html_string):
+    # Parse the HTML string
+    soup = BeautifulSoup(html_string, "html.parser")
+
+    # Find all <li> tags
+    li_tags = soup.find_all("li")
+
+    # Extract the text from each <li> tag
+    bullet_points = [li.get_text(strip=True) for li in li_tags]
+
+    # Convert bullet points to Markdown
+    markdown_text = "\n".join([f"- {point}" for point in bullet_points])
+
+    # Print the Markdown text
+    print(markdown_text)
+
+    return markdown_text
+
+
+def create_jira_message(job_run_result_list):
     comments = ""
+
     if job_run_result_list:
         for r in job_run_result_list:
             comments += "----\n"
-            comments += "<summary><b>Workspace Id: {}, Job Id: {}, Run Id: {}</b></summary>\n\n".format(
+            comments += "This Issue was automatically created by Unravel to follow up on the insights generated for the runs of the jobs mentioned in the description of pr number {} was raised to merge {} from {} to {}\n".format(
+                pr_number, pr_commit_id, pr_base_branch, pr_target_branch)
+            comments += "----\n"
+            comments += "Workspace Id: {}, Job Id: {}, Run Id: {}\n\n".format(
                 r["workspace_id"], r["job_id"], r["run_id"]
             )
             comments += "----\n"
-            comments += "#### [{}]({})\n".format('Unravel URL', r["unravel_url"])
+            comments += "{}: {}\n".format('Unravel URL', r["unravel_url"])
 
             if r['app_summary']:
                 headers = list(r['app_summary'].keys())
-                header_row = "| " + " | ".join(headers) + " |\n"
-                separator_row = "| " + " | ".join(["---"] * len(headers)) + " |\n"
+                header_row = "|| " + " || ".join(headers) + " |\n"
                 data_rows = "| " + " | ".join(str(r['app_summary'].get(h, "")) for h in headers) + " |\n"
                 comments += "----\n"
-                comments += "App Summary  <sup>*Estimated cost is the sum of DBUs and VM Cost</sup>\n"
+                comments += "App Summary\n"
+                comments += "*Estimated cost is the sum of DBUs and VM Cost\n"
                 comments += "----\n"
-                comments += header_row + separator_row + data_rows
+                comments += "\n" + header_row + data_rows
 
             if r["unravel_insights"]:
                 comments += "\nUnravel Insights\n"
@@ -316,13 +337,18 @@ def create_jira_message(job_run_result_list, link):
                             if instances:
                                 for i in instances:
                                     if i["key"].upper() != "SPARKAPPTIMEREPORT":
-                                        comments += "| {}: {} |\n".format(i["key"].upper(), events_map[i['key']])
-                                        comments += "|---	|\n"
-                                        comments += "| ℹ️ **{}** 	|\n".format(i['title'])
-                                        comments += "| ⚡ **Details**<br>{}	|\n".format(i["events"])
-                                        comments += "| 🛠 **Actions**<br>{}	|\n".format(i['actions'])
+                                        comments += "\n"
+                                        comments += "|| {}: {} ||\n".format(i["key"].upper(), events_map[i['key']])
+                                        comments += "| ℹ️ *{}* 	|\n".format(i['title'])
+                                        comments += "| ⚡ *Details*\n{}	|\n".format(i["events"])
+                                        if '<li>' in i['actions']:
+                                            comments += "| 🛠 *Actions*\n{}	|\n".format(
+                                                create_markdown_from_html(i['actions']))
+                                        else:
+                                            comments += "| 🛠 *Actions*\n{}	|\n".format(i['actions'])
                                         comments += "\n"
     return comments
+
 
 
 # %%
@@ -415,7 +441,7 @@ def main():
 
         jira_message = create_jira_message(job_run_result_list, pr_url)
 
-        raise_jira_ticket(jira_message)
+        raise_jira_ticket(unravel_comments)
 
     else:
         print("Nothing to do without Unravel integration")
