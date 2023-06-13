@@ -273,7 +273,7 @@ def raise_jira_ticket(message):
     issue_data = {
         'project': {'key': 'CICD'},
         'summary': 'Issue summary',
-        'description': comments,
+        'description': message,
         'issuetype': {'name': 'Task'}
     }
 
