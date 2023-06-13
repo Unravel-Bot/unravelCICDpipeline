@@ -312,35 +312,12 @@ def raise_jira_ticket(message):
 
 
 def create_jira_message(job_run_result_list):
-    '''This Issue was automatically created by Unravel to follow up on the insights generated for the runs of the jobs mentioned in the description of <PR_ID> raised by <user_id> to merge <commit_id> from <base_branch> to <target_branch>
 
-
-Details of the dbx job
-
-Job ID: <dbx_job_link, from the description>, <unravel_dbx_job_link>
-Cluster ID: <unravel_cluster_page_link>
-Spark App: <unravel_spark_app_link>
-Estimated Cost
-Tags
-AutoScaling Info
-
-The following insights were generated
-<List Unique Event Names>
-
-For detailed information, click here <Hyperlink to pr>. '''
-    '''pr_number = os.getenv('PR_NUMBER')
-repo_name = os.getenv('GITHUB_REPOSITORY')
-access_token = os.getenv('GITHUB_TOKEN')
-pr_url = os.getenv('PR_URL')
-pr_user_email = os.getenv('PR_USER_EMAIL')
-pr_commit_id = os.getenv('COMMIT_SHA')
-pr_base_branch = os.getenv('BASE_BRANCH')
-pr_target_branch = os.getenv('TARGET_BRANCH')      r["workspace_id"], r["job_id"], r["run_id"]'''
     comment = "This Issue was automatically created by Unravel to follow up on the insights generated for the runs of the jobs mentioned in the description of {} raised by {} to merge {} from {} to {} \n\n".format(pr_number,pr_user_email,pr_commit_id,pr_base_branch,pr_target_branch)
     if job_run_result_list:
         for r in job_run_result_list:
-            comment += "Details of the dbx job\n\n"
-            comment += "Job ID: [{}]({})\n".format('Unravel url', r["unravel_url"])
+            comment += "\n\n Details of the dbx job\n"
+            comment += "Job ID: {}\n".format(r["unravel_url"])
             comment += "Cluster ID: {}\n".format(r['app_summary']['Cluster'])
             comment += "Spark App: {}\n".format(r['app_summary']['Spark App'])
             comment += "Estimated Cost: {}\n".format(r['app_summary']['Estimated cost'])
@@ -431,7 +408,7 @@ def main():
         # unravel_comments = re.sub(cleanRe, '', json.dumps(job_run_result_list, indent=4))
         unravel_comments = create_comments_with_markdown(job_run_result_list)
 
-        url = url = f"https://api.github.com/repos/{repo_name}/issues/{pr_number}/comments"
+        url =  f"https://api.github.com/repos/{repo_name}/issues/{pr_number}/comments"
 
         headers = {
             "Authorization": f"Bearer {access_token}",
@@ -443,7 +420,7 @@ def main():
 
         channel = '#cicd-notifications'
         # Replace with your Markdown-formatted message
-        message = 'Unravel has insights for the pr number {} raised by {} to merge {} from {} to {}. Click this link for further details {}'.format(
+        message = 'Unravel has insights for the pr ticket {} raised by {} to merge {} from {} to {}. Click this link for further details {}'.format(
             pr_number, pr_user_email, pr_commit_id, pr_base_branch, pr_target_branch, pr_url)
 
         send_markdown_to_slack(channel, message)
