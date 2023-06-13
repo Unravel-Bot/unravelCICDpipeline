@@ -279,70 +279,32 @@ def raise_jira_ticket(message):
 
     new_issue = jira.create_issue(fields=issue_data)
 
-    # # API endpoint for creating an issue
-    # url = f'https://{domain}/rest/api/3/issue'
-    #
-    # # Headers and authentication
-    # headers = {
-    #     'Content-Type': 'application/json'
-    # }
-    # auth = (email, api_token)
-    #
-    # # Issue data
-    # issue_data = {
-    #     'fields': {
-    #         'project': {
-    #             'key': project_key
-    #         },
-    #         'summary': 'Issue summary',
-    #         'description': {
-    #             'type': 'doc',
-    #             'version': 1,
-    #             'content': [
-    #                 {
-    #                     'type': 'paragraph',
-    #                     'content': [
-    #                         {
-    #                             'type': 'text',
-    #                             'text': message
-    #                         }
-    #                     ]
-    #                 }
-    #             ]
-    #         },
-    #         'issuetype': {
-    #             'name': 'Task'
-    #         }
-    #     }
-    # }
-    #
-    # # Create the issue
-    # response = requests.post(url, headers=headers, auth=auth, data=json.dumps(issue_data))
-    #
-    # # Check the response
-    # if response.status_code == 201:
-    #     print('Issue created successfully!')
-    #     issue_key = response.json()['key']
-    #     print(f'Issue key: {issue_key}')
-    # else:
-    #     print('Failed to create issue. Response:', response.text)
 
 
 def create_jira_message(job_run_result_list, link):
-    pattern = r'\((.*?)\)'
-    comment = "This Issue was automatically created by Unravel to follow up on the insights generated for the runs of the jobs mentioned in the description of pr number {} was raised to merge {} from {} to {} \n".format(pr_number,pr_commit_id,pr_base_branch,pr_target_branch)
+    comments = ""
     if job_run_result_list:
         for r in job_run_result_list:
-            comment += "\nDetails of the dbx job {}\n\n".format(r["job_id"])
-            comment += "Job ID: {}\n".format(r["unravel_url"])
-            comment += "Cluster ID: {}\n".format(re.search(pattern, r['app_summary']['Cluster']).group(1))
-            comment += "Spark App: {}\n".format(re.search(pattern, r['app_summary']['Spark App']).group(1))
-            comment += "Estimated Cost: {}\n".format(r['app_summary']['Estimated cost'])
-            comment += "Tags: {}\n".format(r['app_summary']['Tags'])
-            comment += "AutoScaling Info: {}\n".format(r['app_summary']['Autoscale'])
-            comment += "\n"
-            comment += "The following insights were generated\n\n"
+            comments += "----\n"
+            comments += "<summary><b>Workspace Id: {}, Job Id: {}, Run Id: {}</b></summary>\n\n".format(
+                r["workspace_id"], r["job_id"], r["run_id"]
+            )
+            comments += "----\n"
+            comments += "#### [{}]({})\n".format('Unravel URL', r["unravel_url"])
+
+            if r['app_summary']:
+                headers = list(r['app_summary'].keys())
+                header_row = "| " + " | ".join(headers) + " |\n"
+                separator_row = "| " + " | ".join(["---"] * len(headers)) + " |\n"
+                data_rows = "| " + " | ".join(str(r['app_summary'].get(h, "")) for h in headers) + " |\n"
+                comments += "----\n"
+                comments += "App Summary  <sup>*Estimated cost is the sum of DBUs and VM Cost</sup>\n"
+                comments += "----\n"
+                comments += header_row + separator_row + data_rows
+
             if r["unravel_insights"]:
+                comments += "\nUnravel Insights\n"
+                comments += "----\n"
                 for insight in r["unravel_insights"]:
                     categories = insight["categories"]
                     if categories:
@@ -351,45 +313,13 @@ def create_jira_message(job_run_result_list, link):
                             if instances:
                                 for i in instances:
                                     if i["key"].upper() != "SPARKAPPTIMEREPORT":
-                                        comment += "{}: {} \n".format(i["key"].upper(), events_map[i['key']])
-    comment += '\n\n For more detailed information clink this link {}'.format(link)
-    return comment
-
-# def create_jira_message(job_run_result_list, link):
-#     pattern = r'\((.*?)\)'
-#     comment = "This Issue was automatically created by Unravel to follow up on the insights generated for the runs of the jobs mentioned in the description of pr number {} was raised to merge {} from {} to {} <br>".format(
-#         pr_number, pr_commit_id, pr_base_branch, pr_target_branch)
-#
-#     if job_run_result_list:
-#         for r in job_run_result_list:
-#             comment += "<br>Details of the dbx job {}<br><br>".format(r["job_id"])
-#             comment += "Job ID: {}<br>".format(r["unravel_url"])
-#             comment += "Cluster ID: {}<br>".format(re.search(pattern, r['app_summary']['Cluster']).group(1))
-#             comment += "Spark App: {}<br>".format(re.search(pattern, r['app_summary']['Spark App']).group(1))
-#             comment += "Estimated Cost: {}<br>".format(r['app_summary']['Estimated cost'])
-#             comment += "Tags: {}<br>".format(r['app_summary']['Tags'])
-#             comment += "AutoScaling Info: {}<br>".format(r['app_summary']['Autoscale'])
-#             comment += "<br>"
-#             comment += "The following insights were generated<br><br>"
-#
-#             if r["unravel_insights"]:
-#                 for insight in r["unravel_insights"]:
-#                     categories = insight["categories"]
-#
-#                     if categories:
-#                         for k in categories.keys():
-#                             instances = categories[k]["instances"]
-#
-#                             if instances:
-#                                 for i in instances:
-#                                     if i["key"].upper() != "SPARKAPPTIMEREPORT":
-#                                         comment += "{}: {} <br>".format(i["key"].upper(), events_map[i['key']])
-#
-#     comment += '<br><br>For more detailed information, click this link: {}'.format(link)
-#     comment = html.escape(comment)  # Escape special characters
-#     comment = "<p>" + comment.replace("\n", "<br>") + "</p>"  # Add <p> tags and replace newlines with <br>
-#
-#     return comment
+                                        comments += "| {}: {} |\n".format(i["key"].upper(), events_map[i['key']])
+                                        comments += "|---	|\n"
+                                        comments += "| ℹ️ **{}** 	|\n".format(i['title'])
+                                        comments += "| ⚡ **Details**<br>{}	|\n".format(i["events"])
+                                        comments += "| 🛠 **Actions**<br>{}	|\n".format(i['actions'])
+                                        comments += "\n"
+    return comments
 
 
 # %%
@@ -482,7 +412,7 @@ def main():
 
         jira_message = create_jira_message(job_run_result_list, pr_url)
 
-        raise_jira_ticket(unravel_comments)
+        raise_jira_ticket(jira_message)
 
     else:
         print("Nothing to do without Unravel integration")
