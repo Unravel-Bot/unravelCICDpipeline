@@ -209,31 +209,40 @@ def create_comments_with_markdown(job_run_result_list):
 
 
 def fetch_app_summary(unravel_url, unravel_token, clusterUId, appId):
-    app_summary_map = {}
+    app_summary_map_for_git_comment = {}
+    app_summary_map_for_jira_comments = {}
     autoscale_dict = {}
     summary_dict = search_summary(unravel_url, unravel_token, clusterUId, appId)
     summary_dict = summary_dict["annotation"]
     url = '{}/#/app/application/spark?execId={}&clusterUid={}'.format(unravel_url, appId, clusterUId)
-    app_summary_map["Spark App"] = '[{}]({})'.format(appId, url)
+    app_summary_map_for_git_comment["Spark App"] = '[{}]({})'.format(appId, url)
+    app_summary_map_for_jira_comments["Spark App"] = '[{}|{}]'.format(appId, url)
     cluster_url = '{}/#/compute/cluster_summary?cluster_uid={}&app_id={}'.format(unravel_url, clusterUId, appId)
-    app_summary_map["Cluster"] = '[{}]({})'.format(clusterUId, cluster_url)
-    app_summary_map["Estimated cost"] = '$ {}'.format(summary_dict["cents"] + summary_dict["dbuCost"])
+    app_summary_map_for_git_comment["Cluster"] = '[{}]({})'.format(clusterUId, cluster_url)
+    app_summary_map_for_jira_comments["Cluster"] = '[{}|{}]'.format(clusterUId, cluster_url)
+    app_summary_map_for_git_comment["Estimated cost"] = '$ {}'.format(summary_dict["cents"] + summary_dict["dbuCost"])
+    app_summary_map_for_jira_comments["Estimated cost"] = '$ {}'.format(summary_dict["cents"] + summary_dict["dbuCost"])
     runinfo = json.loads(summary_dict["runInfo"])
-    app_summary_map["Executor Node Type"] = runinfo["node_type_id"]
-    app_summary_map["Driver Node Type"] = runinfo["driver_node_type_id"]
-    app_summary_map["Tags"] = runinfo["default_tags"]
+    app_summary_map_for_git_comment["Executor Node Type"] = runinfo["node_type_id"]
+    app_summary_map_for_jira_comments["Executor Node Type"] = runinfo["node_type_id"]
+    app_summary_map_for_git_comment["Driver Node Type"] = runinfo["driver_node_type_id"]
+    app_summary_map_for_jira_comments["Driver Node Type"] = runinfo["driver_node_type_id"]
+    app_summary_map_for_git_comment["Tags"] = runinfo["default_tags"]
+    app_summary_map_for_jira_comments["Tags"] = runinfo["default_tags"]
     if 'custom_tags' in runinfo.keys():
-        app_summary_map["Tags"] = {**app_summary_map["Tags"], **runinfo["default_tags"]}
+        app_summary_map_for_git_comment["Tags"] = {**app_summary_map_for_git_comment["Tags"], **runinfo["default_tags"]}
     if "autoscale" in runinfo.keys():
         autoscale_dict["autoscale_min_workers"] = runinfo["autoscale"]["min_workers"]
         autoscale_dict["autoscale_max_workers"] = runinfo["autoscale"]["max_workers"]
         autoscale_dict["autoscale_target_workers"] = runinfo["autoscale"][
             "target_workers"
         ]
-        app_summary_map['Autoscale'] = autoscale_dict
+        app_summary_map_for_git_comment['Autoscale'] = autoscale_dict
+        app_summary_map_for_jira_comments['Autoscale'] = autoscale_dict
     else:
-        app_summary_map['Autoscale'] = 'Autoscale is not enabled.'
-    return app_summary_map
+        app_summary_map_for_git_comment['Autoscale'] = 'Autoscale is not enabled.'
+        app_summary_map_for_jira_comments['Autoscale'] = 'Autoscale is not enabled.'
+    return app_summary_map_for_git_comment, app_summary_map_for_jira_comments
 
 
 def get_pr_description():
@@ -280,6 +289,10 @@ def raise_jira_ticket(message):
     new_issue = jira.create_issue(fields=issue_data)
 
     print(new_issue)
+    
+    jira_link = 'https://{}/browse/{}'.format(domain, new_issue)
+    
+    return jira_link
 
 
 def create_markdown_from_html(html_string):
@@ -347,10 +360,10 @@ def create_jira_message(job_run_result_list):
             comments += "----\n"
             comments += "[{}|{}]\n".format('Unravel URL', r["unravel_url"])
 
-            if r['app_summary']:
-                headers = list(r['app_summary'].keys())
+            if r['jir_app_summary']:
+                headers = list(r['jir_app_summary'].keys())
                 header_row = "|| " + " || ".join(headers) + " |\n"
-                data_rows = "| " + " | ".join(str(r['app_summary'].get(h, "")) for h in headers) + " |\n"
+                data_rows = "| " + " | ".join(str(r['jir_app_summary'].get(h, "")) for h in headers) + " |\n"
                 comments += "----\n"
                 comments += "App Summary\n"
                 comments += "*Estimated cost is the sum of DBUs and VM Cost\n"
@@ -443,7 +456,9 @@ def main():
                 ] = unravel_url + "/#/app/application/db?execId={}".format(gsp)
                 run["unravel_insights"] = insights2_json
                 run["unravel_recommendation"] = recommendation_json
-                run["app_summary"] = fetch_app_summary(unravel_url, unravel_token, clusterUId, appId)
+                git_summary, jira_summary = fetch_app_summary(unravel_url, unravel_token, clusterUId, appId)
+                run["app_summary"] = git_summary
+                run["jir_app_summary"] = jira_summary
                 # add to the list
                 job_run_result_list.append(run)
         else:
@@ -463,11 +478,16 @@ def main():
         response = requests.post(url, headers=headers, json=payload)
         response.raise_for_status()
 
+
+
+        jira_message = create_jira_message(job_run_result_list)
+
+        jira_link = raise_jira_ticket(jira_message)
+
         channel = '#cicd-notifications'
         # Replace with your Markdown-formatted message
-        message = 'Unravel has insights for the pr number {} which was raised to merge {} from {} to {}. Click this link for further details {}'.format(
-            pr_number, pr_commit_id, pr_base_branch, pr_target_branch, pr_url)
-
+        message = 'Unravel has insights for the pr number {} which was raised to merge {} from {} to {}. Click this link for further details {}, alos a jira has been raised please find the jira link {}'.format(
+            pr_number, pr_commit_id, pr_base_branch, pr_target_branch, pr_url, jira_link)
         # Format the user IDs with '@' symbol
         user_ids = get_pr_reviewers_list()
         formatted_user_ids = ['@' + user_id for user_id in user_ids]
@@ -477,9 +497,6 @@ def main():
 
         send_markdown_to_slack(channel, message_with_mentions)
 
-        jira_message = create_jira_message(job_run_result_list)
-
-        raise_jira_ticket(jira_message)
 
     else:
         print("Nothing to do without Unravel integration")
