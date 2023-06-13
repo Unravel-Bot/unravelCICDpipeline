@@ -300,21 +300,52 @@ def create_markdown_from_html(html_string):
 
     return markdown_text
 
+def get_pr_reviewers_list():
+
+    # Set the GitHub access token
+
+    # Set the API endpoint
+    api_endpoint = f'https://api.github.com/repos/{repo_name}/pulls/{pr_number}'
+
+    # Set the request headers
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Accept': 'application/vnd.github.v3+json'
+    }
+
+    # Send the API request
+    response = requests.get(api_endpoint, headers=headers)
+
+    # Check the response status code
+    if response.status_code == 200:
+        # Parse the response JSON
+        pr_data = response.json()
+
+        # Get the list of reviewers
+        reviewers = [reviewer['login'] for reviewer in pr_data['requested_reviewers']]
+
+        # Print the reviewers
+        print('Reviewers:', reviewers)
+        return reviewers
+    else:
+        print('Failed to fetch pull request details:', response.text)
+        return []
+
 
 def create_jira_message(job_run_result_list):
     comments = ""
-
+    comments += "----\n"
+    comments += "This Issue was automatically created by Unravel to follow up on the insights generated for the runs of the jobs mentioned in the description of pr number {} was raised to merge {} from {} to {}\n".format(
+        pr_number, pr_commit_id, pr_base_branch, pr_target_branch)
     if job_run_result_list:
         for r in job_run_result_list:
-            comments += "----\n"
-            comments += "This Issue was automatically created by Unravel to follow up on the insights generated for the runs of the jobs mentioned in the description of pr number {} was raised to merge {} from {} to {}\n".format(
-                pr_number, pr_commit_id, pr_base_branch, pr_target_branch)
+
             comments += "----\n"
             comments += "Workspace Id: {}, Job Id: {}, Run Id: {}\n\n".format(
                 r["workspace_id"], r["job_id"], r["run_id"]
             )
             comments += "----\n"
-            comments += "{}: {}\n".format('Unravel URL', r["unravel_url"])
+            comments += "[{}|{}]\n".format('Unravel URL', r["unravel_url"])
 
             if r['app_summary']:
                 headers = list(r['app_summary'].keys())
@@ -437,7 +468,14 @@ def main():
         message = 'Unravel has insights for the pr number {} which was raised to merge {} from {} to {}. Click this link for further details {}'.format(
             pr_number, pr_commit_id, pr_base_branch, pr_target_branch, pr_url)
 
-        send_markdown_to_slack(channel, message)
+        # Format the user IDs with '@' symbol
+        user_ids = get_pr_reviewers_list()
+        formatted_user_ids = ['@' + user_id for user_id in user_ids]
+
+        # Create the message text with user mentions
+        message_with_mentions = message + ' ' + ' '.join(formatted_user_ids)
+
+        send_markdown_to_slack(channel, message_with_mentions)
 
         jira_message = create_jira_message(job_run_result_list)
 
@@ -446,7 +484,6 @@ def main():
     else:
         print("Nothing to do without Unravel integration")
         sys.exit(0)
-
 
 # %%
 if __name__ == "__main__":
