@@ -269,9 +269,6 @@ def raise_jira_ticket(message):
     # Connect to Jira
     jira = JIRA(server='https://{}'.format(domain), basic_auth=(email, api_token))
 
-    # Generate comments in Markdown format
-    comments = create_comments_with_markdown(message)
-
     # Create the issue
     issue_data = {
         'project': {'key': 'CICD'},
@@ -281,16 +278,16 @@ def raise_jira_ticket(message):
     }
 
     new_issue = jira.create_issue(fields=issue_data)
-    
+
     # # API endpoint for creating an issue
     # url = f'https://{domain}/rest/api/3/issue'
-    # 
+    #
     # # Headers and authentication
     # headers = {
     #     'Content-Type': 'application/json'
     # }
     # auth = (email, api_token)
-    # 
+    #
     # # Issue data
     # issue_data = {
     #     'fields': {
@@ -318,10 +315,10 @@ def raise_jira_ticket(message):
     #         }
     #     }
     # }
-    # 
+    #
     # # Create the issue
     # response = requests.post(url, headers=headers, auth=auth, data=json.dumps(issue_data))
-    # 
+    #
     # # Check the response
     # if response.status_code == 201:
     #     print('Issue created successfully!')
