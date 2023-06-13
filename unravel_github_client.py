@@ -439,7 +439,7 @@ def main():
 
         send_markdown_to_slack(channel, message)
 
-        jira_message = create_jira_message(job_run_result_list, pr_url)
+        jira_message = create_jira_message(job_run_result_list)
 
         raise_jira_ticket(unravel_comments)
 
