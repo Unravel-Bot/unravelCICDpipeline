@@ -457,10 +457,7 @@ def perform_code_review():
             'body': 'Avoid data transfer to driver for new enriched columns by directly using spark withColumn function.\n\n Instead use this statement df.withColumn("<newColumn>", lit("<constant_value>"))',
             'commit_id': pr_commit_id,
             'path': changed_files[0],
-            'start_line': 53,
-            'start_side': 'RIGHT',
-            'line': 54,
-            'side': 'RIGHT',
+            'position': 54,
             "diff_hunk": "@@ -8,6 +8,7 @@ some diff content"
         }
     
