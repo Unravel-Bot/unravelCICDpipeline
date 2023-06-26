@@ -58,3 +58,4 @@ jobs:
           JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
           JIRA_PROJECT_KEY: ${{ secrets.JIRA_PROJECT_KEY }}
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          GIT_TOKEN: $(( secrets.GIT_TOKEN }}
