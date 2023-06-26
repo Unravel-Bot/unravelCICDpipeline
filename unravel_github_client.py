@@ -429,10 +429,10 @@ def create_jira_message(job_run_result_list):
 def perform_code_review():
     # Get the changed file paths from the pull request event payload
     headers = {
-        'Authorization': f'Bearer {token}',
+        'Authorization': f'Bearer {access_token}',
         'Accept': 'application/vnd.github.v3+json'
     }
-    url = f'https://api.github.com/repos/{repository}/pulls/{pr_number}/files'
+    url = f'https://api.github.com/repos/{repo_name}/pulls/{pr_number}/files'
     response = requests.get(url, headers=headers)
     files = response.json()
     changed_files = [file['filename'] for file in files]
