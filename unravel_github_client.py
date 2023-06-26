@@ -469,6 +469,17 @@ def perform_code_review():
         else:
             print('Failed to add comment.')
             print(f'Response: {response.status_code} - {response.text}')
+            
+        headers = {
+        'Accept': 'application/vnd.github+json',
+        'Authorization': f'Bearer {access_token}',
+        'X-GitHub-Api-Version': '2022-11-28',
+        'Content-Type': 'application/x-www-form-urlencoded',
+    }
+    
+    data = '{"body":"Great stuff!","commit_id":{},"path":changed_files[0],"start_line":{},"start_side":"RIGHT","line":{},"side":"RIGHT"}'.format(pr_commit_id,changed_files[0],53,54)
+    
+    response = requests.post('https://api.github.com/repos/{}/pulls/{}/comments'.format(repo_name,pr_number), headers=headers, data=data)
 
 # %%
 def main():
