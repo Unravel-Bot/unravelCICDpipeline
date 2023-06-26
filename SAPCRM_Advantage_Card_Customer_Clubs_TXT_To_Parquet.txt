@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %md 
+# MAGIC %md  
 # MAGIC CONVERSION OF TEXT TO PARQUET
 
 # COMMAND ----------
