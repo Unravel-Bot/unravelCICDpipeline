@@ -460,7 +460,8 @@ def perform_code_review():
             'start_line': 53,
             'start_side': 'RIGHT',
             'line': 54,
-            'side': 'RIGHT'
+            'side': 'RIGHT',
+            "diff_hunk": "@@ -8,6 +8,7 @@ some diff content"
         }
     
         # Send POST request
