@@ -437,6 +437,34 @@ def perform_code_review():
     files = response.json()
     changed_files = [file['filename'] for file in files]
     print(changed_files)
+    # Personal access token (replace with your own token)
+
+    # API endpoint
+    url = f'https://api.github.com/repos/{repo_name}/pulls/{pr_number}/comments'
+
+    # Request headers
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Accept': 'application/vnd.github.v3+json'
+    }
+
+    # Request body
+    data = {
+        'body': 'test comment by Unravel,
+        'commit_id': pr_commit_id,
+        'path': changed_files[0],
+        'position': 6
+    }
+
+    # Send POST request
+    response = requests.post(url, headers=headers, data=json.dumps(data))
+
+    # Check response status
+    if response.status_code == 201:
+        print('Comment added successfully.')
+    else:
+        print('Failed to add comment.')
+        print(f'Response: {response.status_code} - {response.text}')
 
 # %%
 def main():
