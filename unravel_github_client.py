@@ -426,6 +426,17 @@ def create_jira_message(job_run_result_list):
                                         comments += "\n"
     return comments
 
+def perform_code_review():
+    # Get the changed file paths from the pull request event payload
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Accept': 'application/vnd.github.v3+json'
+    }
+    url = f'https://api.github.com/repos/{repository}/pulls/{pr_number}/files'
+    response = requests.get(url, headers=headers)
+    files = response.json()
+    changed_files = [file['filename'] for file in files]
+    print(changed_files)
 
 # %%
 def main():
@@ -512,23 +523,25 @@ def main():
         response = requests.post(url, headers=headers, json=payload)
         response.raise_for_status()
 
-        jira_message = create_jira_message(job_run_result_list)
+        perform_code_review()
 
-        jira_link = raise_jira_ticket(jira_message)
+        # jira_message = create_jira_message(job_run_result_list)
 
-        channel = "#cicd-notifications"
-        # Replace with your Markdown-formatted message
-        message = "Unravel has insights for the pr number {} which was raised to merge {} from {} to {}. Click this link for further details {}, alos a jira has been raised please find the jira link {}".format(
-            pr_number, pr_commit_id, pr_base_branch, pr_target_branch, pr_url, jira_link
-        )
-        # Format the user IDs with '@' symbol
-        user_ids = get_pr_reviewers_list()
-        formatted_user_ids = ["@" + user_id for user_id in user_ids]
+        # jira_link = raise_jira_ticket(jira_message)
 
-        # Create the message text with user mentions
-        message_with_mentions = message + " " + " ".join(formatted_user_ids)
+        # channel = "#cicd-notifications"
+        # # Replace with your Markdown-formatted message
+        # message = "Unravel has insights for the pr number {} which was raised to merge {} from {} to {}. Click this link for further details {}, alos a jira has been raised please find the jira link {}".format(
+        #     pr_number, pr_commit_id, pr_base_branch, pr_target_branch, pr_url, jira_link
+        # )
+        # # Format the user IDs with '@' symbol
+        # user_ids = get_pr_reviewers_list()
+        # formatted_user_ids = ["@" + user_id for user_id in user_ids]
 
-        send_markdown_to_slack(channel, message_with_mentions)
+        # # Create the message text with user mentions
+        # message_with_mentions = message + " " + " ".join(formatted_user_ids)
+
+        # send_markdown_to_slack(channel, message_with_mentions)
 
     else:
         print("Nothing to do without Unravel integration")
