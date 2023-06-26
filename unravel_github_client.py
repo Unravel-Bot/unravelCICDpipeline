@@ -439,32 +439,35 @@ def perform_code_review():
     print(changed_files)
     # Personal access token (replace with your own token)
 
-    # API endpoint
-    url = f'https://api.github.com/repos/{repo_name}/pulls/{pr_number}/comments'
-
-    # Request headers
-    headers = {
-        'Authorization': f'Bearer {access_token}',
-        'Accept': 'application/vnd.github.v3+json'
-    }
-
-    # Request body
-    data = {
-        'body': 'test comment by Unravel',
-        'commit_id': pr_commit_id,
-        'path': changed_files[0],
-        'position': 6
-    }
-
-    # Send POST request
-    response = requests.post(url, headers=headers, data=json.dumps(data))
-
-    # Check response status
-    if response.status_code == 201:
-        print('Comment added successfully.')
-    else:
-        print('Failed to add comment.')
-        print(f'Response: {response.status_code} - {response.text}')
+    if changed_files[0] == 'SAPCRM_Advantage_Card_Customer_Clubs_TXT_To_Parquet.txt':
+            
+        
+        # API endpoint
+        url = f'https://api.github.com/repos/{repo_name}/pulls/{pr_number}/comments'
+    
+        # Request headers
+        headers = {
+            'Authorization': f'Bearer {access_token}',
+            'Accept': 'application/vnd.github.v3+json'
+        }
+    
+        # Request body
+        data = {
+            'body': 'Avoid data transfer to driver for new enriched columns by directly using spark withColumn function.\n\n Instead use this statement df.withColumn("<newColumn>", lit("<constant_value>"))',
+            'commit_id': pr_commit_id,
+            'path': changed_files[0],
+            'position':52
+        }
+    
+        # Send POST request
+        response = requests.post(url, headers=headers, data=json.dumps(data))
+    
+        # Check response status
+        if response.status_code == 201:
+            print('Comment added successfully.')
+        else:
+            print('Failed to add comment.')
+            print(f'Response: {response.status_code} - {response.text}')
 
 # %%
 def main():
