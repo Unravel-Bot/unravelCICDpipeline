@@ -444,21 +444,19 @@ def perform_code_review():
         
         # API endpoint
         url = f'https://api.github.com/repos/{repo_name}/pulls/{pr_number}/comments'
-    
+
         # Request headers
         headers = {
             'Authorization': f'Bearer {access_token}',
             'Accept': 'application/vnd.github.v3+json',
-            'X-GitHub-Api-Version': '2022-11-28' 
+            'X-GitHub-Api-Version': '2022-11-28'
         }
-    
+        
         # Request body
         data = {
             'body': 'Avoid data transfer to driver for new enriched columns by directly using spark withColumn function.\n\n Instead use this statement df.withColumn("<newColumn>", lit("<constant_value>"))',
-            'commit_id': pr_commit_id,
             'path': changed_files[0],
-            'position': 54,
-            "diff_hunk": "@@ -8,6 +8,7 @@ some diff content"
+            'position': 54
         }
     
         # Send POST request
