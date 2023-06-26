@@ -456,6 +456,7 @@ def perform_code_review():
         data = {
             'body': 'Avoid data transfer to driver for new enriched columns by directly using spark withColumn function.\n\n Instead use this statement df.withColumn("<newColumn>", lit("<constant_value>"))',
             'path': changed_files[0],
+            'commit_id': pr_commit_id,
             'position': 54
         }
     
