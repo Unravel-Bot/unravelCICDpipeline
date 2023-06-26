@@ -450,7 +450,7 @@ def perform_code_review():
 
     # Request body
     data = {
-        'body': 'test comment by Unravel,
+        'body': 'test comment by Unravel',
         'commit_id': pr_commit_id,
         'path': changed_files[0],
         'position': 6
