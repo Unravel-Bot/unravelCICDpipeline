@@ -455,8 +455,8 @@ def search_string_in_code(code, search_string):
 def create_custom_code_block_and_add_pr_comment(code_block):
     comment = "\n```python\n"
     for code in code_block:
-        comment += code
-    comment += "```\n"
+        comment += "{}\n".format(code)
+    comment += "```\n\n"
     return comment
 
 def perform_code_review():
