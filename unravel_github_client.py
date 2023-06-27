@@ -446,7 +446,7 @@ def search_string_in_code(code, search_string):
     for line_number in line_numbers:
         result = []
         start_line = max(1, line_number - 3)
-        end_line = min(len(lines), line_number + 3)
+        end_line = min(len(lines), line_number)
         for i in range(start_line, end_line + 1):
             result.append(f"{i} {lines[i - 1]}")
         all_lines.append(result)
