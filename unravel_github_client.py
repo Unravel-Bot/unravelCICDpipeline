@@ -441,8 +441,22 @@ def search_string_in_code(code, search_string):
     for line_number, line in enumerate(lines, 1):
         if search_string in line:
             line_numbers.append(line_number)
-    return line_numbers
 
+    result = []
+    for line_number in line_numbers:
+        start_line = max(1, line_number - 3)
+        end_line = min(len(lines), line_number + 3)
+        for i in range(start_line, end_line + 1):
+            result.append((i, lines[i - 1]))
+
+    return line_numbers, result
+
+def create_custom_code_block_and_add_pr_comment(code_block):
+    comment = "\n```python\n"
+    for code in code_block:
+        comment+= code
+    comment += "```\n"
+    return comment
 
 def perform_code_review():
     # Get the changed file paths from the pull request event payload
@@ -467,7 +481,7 @@ def perform_code_review():
 
     for file_name, file_content in file_contents.items():
         for pattern, optimal_value in file_code_map.items():
-            line_numbers = search_string_in_code(file_content, pattern)
+            line_numbers, code_lines = search_string_in_code(file_content, pattern)
 
             # API endpoint
             url = f'https://api.github.com/repos/{repo_name}/pulls/{pr_number}/comments'
@@ -479,14 +493,14 @@ def perform_code_review():
                 'X-GitHub-Api-Version': '2022-11-28'
             }
 
-            for line_number in line_numbers:
+            for line_number, code_block in zip(line_numbers,code_lines):
 
                 # Request body
                 data = {
                     'body': optimal_value,
                     'path': file_name,
                     'commit_id': pr_commit_id,
-                    'subject_type': 'FILE'
+                    'line': line_number
                 }
 
                 # Send POST request
@@ -496,8 +510,18 @@ def perform_code_review():
                 if response.status_code == 201:
                     print('Comment added successfully.')
                 else:
-                    print('Failed to add comment.')
-                    print(f'Response: {response.status_code} - {response.text}')
+                    comment = create_custom_code_block_and_add_pr_comment(code_block)
+                    comment += "\n\n"
+                    comment += optimal_value
+                    url = f"https://api.github.com/repos/{repo_name}/issues/{pr_number}/comments"
+
+                    headers = {
+                        "Authorization": f"Bearer {access_token}",
+                        "Accept": "application/vnd.github.v3+json",
+                    }
+                    payload = {"body": "{}".format(comment)}
+                    response = requests.post(url, headers=headers, json=payload)
+                    response.raise_for_status()
 
 # %%
 def main():
