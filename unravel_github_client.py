@@ -32,7 +32,8 @@ events_map = {
 # Git specific variables
 pr_number = os.getenv("PR_NUMBER")
 repo_name = os.getenv("GITHUB_REPOSITORY")
-access_token = os.getenv("GITHUB_TOKEN")
+# access_token = os.getenv("GITHUB_TOKEN")
+access_token = os.getenv("GIT_TOKEN")
 pr_url = os.getenv("PR_URL")
 pr_user_email = os.getenv("PR_USER_EMAIL")
 pr_commit_id = os.getenv("COMMIT_SHA")
