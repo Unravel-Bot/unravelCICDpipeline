@@ -442,19 +442,20 @@ def search_string_in_code(code, search_string):
         if search_string in line:
             line_numbers.append(line_number)
 
-    result = []
+    all_lines = []
     for line_number in line_numbers:
+        result = []
         start_line = max(1, line_number - 3)
         end_line = min(len(lines), line_number + 3)
         for i in range(start_line, end_line + 1):
-            result.append((i, lines[i - 1]))
-
+            result.append(f"{i} {lines[i - 1]}")
+        all_lines.append(result)
     return line_numbers, result
 
 def create_custom_code_block_and_add_pr_comment(code_block):
     comment = "\n```python\n"
     for code in code_block:
-        comment+= code
+        comment += code
     comment += "```\n"
     return comment
 
