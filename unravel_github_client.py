@@ -450,7 +450,7 @@ def search_string_in_code(code, search_string):
         for i in range(start_line, end_line + 1):
             result.append(f"{i} {lines[i - 1]}")
         all_lines.append(result)
-    return line_numbers, result
+    return line_numbers, all_lines
 
 def create_custom_code_block_and_add_pr_comment(code_block):
     comment = "\n```python\n"
