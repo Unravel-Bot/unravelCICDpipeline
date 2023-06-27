@@ -458,7 +458,7 @@ def perform_code_review():
             'body': 'toPandas() moves all the data to driver to convert the spark df to a pandas dataframe.\n\n Instead use this statement df.withColumn("<newColumn>", lit("<constant_value>"))',
             'path': changed_files[0],
             'commit_id': pr_commit_id,
-            'position': 56
+            'start_line': 56
         }
     
         # Send POST request
