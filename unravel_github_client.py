@@ -486,7 +486,6 @@ def perform_code_review():
                     'body': optimal_value,
                     'path': file_name,
                     'commit_id': pr_commit_id,
-                    'line': line_number,
                     'subject_type': 'FILE'
                 }
 
