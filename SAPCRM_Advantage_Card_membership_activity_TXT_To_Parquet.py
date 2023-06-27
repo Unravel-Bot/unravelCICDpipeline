@@ -85,9 +85,9 @@ for file in filelist1.split(","):
     df1.insert(29,'Source_Sent_Date',dfo[4],True)
     df1.insert(30,'Source_Sent_Time',dfo[5],True)
     df1=df1[1:-1]
-    #display(df1)
+    display(df1)
     df2=spark.createDataFrame(df1,schema=dfSchema1)
-    #display(df2)
+    display(df2)
     df2.write.mode('append').format("parquet").save(tgtmountPoint+DestinationPath+"/"+RunDate+RunTime+"/")
   
 
