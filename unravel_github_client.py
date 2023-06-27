@@ -54,6 +54,13 @@ project_key = os.getenv("JIRA_PROJECT_KEY")
 api_token = os.getenv("JIRA_API_TOKEN")
 
 
+
+file_code_map = {}
+file_code_map['df.toPandas()'] = 'toPandas() moves all the data to driver to convert the spark df to a pandas dataframe.\n\n Instead use this statement df.withColumn("<newColumn>", lit("<constant_value>"))'
+file_code_map['df.collect()'] = 'Avoid collecting all the data if we require only few rows of dataframe..\n\n Instead use this statement df.take(n)'
+
+
+
 # %%
 def get_api(api_url, api_token):
     response = requests.get(api_url, verify=False, headers={"Authorization": api_token})
@@ -427,6 +434,16 @@ def create_jira_message(job_run_result_list):
                                         comments += "\n"
     return comments
 
+
+def search_string_in_code(code, search_string):
+    line_numbers = []
+    lines = code.split("\n")
+    for line_number, line in enumerate(lines, 1):
+        if search_string in line:
+            line_numbers.append(line_number)
+    return line_numbers
+
+
 def perform_code_review():
     # Get the changed file paths from the pull request event payload
     headers = {
@@ -438,38 +455,49 @@ def perform_code_review():
     files = response.json()
     changed_files = [file['filename'] for file in files]
     print(changed_files)
+
+    file_contents = {}
+    for file in files:
+        file_url = file['raw_url']
+        file_response = requests.get(file_url)
+        file_content = file_response.text
+        file_contents[file['filename']] = file_content
     # Personal access token (replace with your own token)
 
-    if changed_files[0] == 'SAPCRM_Advantage_Card_Customer_Clubs_TXT_To_Parquet.txt':
-            
-        
-        # API endpoint
-        url = f'https://api.github.com/repos/{repo_name}/pulls/{pr_number}/comments'
 
-        # Request headers
-        headers = {
-            'Authorization': f'Bearer {access_token}',
-            'Accept': 'application/vnd.github.v3+json',
-            'X-GitHub-Api-Version': '2022-11-28'
-        }
-        
-        # Request body
-        data = {
-            'body': 'toPandas() moves all the data to driver to convert the spark df to a pandas dataframe.\n\n Instead use this statement df.withColumn("<newColumn>", lit("<constant_value>"))',
-            'path': changed_files[0],
-            'commit_id': pr_commit_id,
-            'line': 56
-        }
-    
-        # Send POST request
-        response = requests.post(url, headers=headers, data=json.dumps(data))
-    
-        # Check response status
-        if response.status_code == 201:
-            print('Comment added successfully.')
-        else:
-            print('Failed to add comment.')
-            print(f'Response: {response.status_code} - {response.text}')
+    for file_name, file_content in file_contents.items():
+        for pattern, optimal_value in file_code_map.items():
+            line_numbers = search_string_in_code(file_content, pattern)
+
+            # API endpoint
+            url = f'https://api.github.com/repos/{repo_name}/pulls/{pr_number}/comments'
+
+            # Request headers
+            headers = {
+                'Authorization': f'Bearer {access_token}',
+                'Accept': 'application/vnd.github.v3+json',
+                'X-GitHub-Api-Version': '2022-11-28'
+            }
+
+            for line_number in line_numbers:
+
+                # Request body
+                data = {
+                    'body': optimal_value,
+                    'path': file_name,
+                    'commit_id': pr_commit_id,
+                    'line': line_number
+                }
+
+                # Send POST request
+                response = requests.post(url, headers=headers, data=json.dumps(data))
+
+                # Check response status
+                if response.status_code == 201:
+                    print('Comment added successfully.')
+                else:
+                    print('Failed to add comment.')
+                    print(f'Response: {response.status_code} - {response.text}')
 
 # %%
 def main():

@@ -1,9 +1,8 @@
 # Databricks notebook source
-# MAGIC %sql
-# MAGIC --ALTER TABLE delta.`/mnt/idf-curatestandard/BUKIT/BTCSVOC/BUK_SVOC_Customer_consent_Incr/Incremental` ADD columns (Source_Sent_Date string, Source_Sent_Time string);
-# MAGIC --describe delta.`/mnt/idf-curatestandard/BUKIT/BTCSVOC/BUK_SVOC_Customer_consent_Incr/Incremental`
-# MAGIC --ALTER TABLE delta.`/mnt/idf-curatestandard/BUKIT/BTCSVOC/BUK_SVOC_Customer_consent_Incr/BackUp` ADD columns (Source_Sent_Date string, Source_Sent_Time string);
-# MAGIC --describe delta.`/mnt/idf-curatestandard/BUKIT/BTCSVOC/BUK_SVOC_Customer_consent_Incr/BackUp`
+# MAGIC %md
+# MAGIC select * from curate_standard.SVOC_Customer_entity_link_Incr-- order by rundatetime desc
+# MAGIC --ALTER TABLE curate_standard.SVOC_Customer_entity_link_Incr ADD columns (Source_Sent_Date string, Source_Sent_Time string);
+# MAGIC --describe curate_standard.SVOC_Customer_entity_link_Incr 
 
 # COMMAND ----------
 
@@ -36,20 +35,18 @@ SourceFileCount=len(filelist.split(","))
 OutputTableList=[]
 dfSchema = StructType([ StructField("ENTITY_ID", StringType(), True),
 StructField("PARTY_ID", StringType(), True),
-StructField("CONSENT_TYPE_ID", StringType(), True),
-StructField("CONSENT_OPT_IN_VALUE", StringType(), True),
-StructField("CONSENT_UPDATE_TIME", StringType(), True),
-StructField("CONSENT_SOURCE_CODE", StringType(), True),
+StructField("SOURCE_CODE", StringType(), True),
+StructField("SOURCE_GUID", StringType(), True),
+StructField("MEMBER_UPDATED_TIMESTAMP", StringType(), True),
 StructField("ENTITY_CREATE_TIME", StringType(), True),
 StructField("ENTITY_LAST_UPDATE_TIME", StringType(), True)
 ])
 
 dfSchema1 = StructType([ StructField("ENTITY_ID", StringType(), True),
 StructField("PARTY_ID", StringType(), True),
-StructField("CONSENT_TYPE_ID", StringType(), True),
-StructField("CONSENT_OPT_IN_VALUE", StringType(), True),
-StructField("CONSENT_UPDATE_TIME", StringType(), True),
-StructField("CONSENT_SOURCE_CODE", StringType(), True),
+StructField("SOURCE_CODE", StringType(), True),
+StructField("SOURCE_GUID", StringType(), True),
+StructField("MEMBER_UPDATED_TIMESTAMP", StringType(), True),
 StructField("ENTITY_CREATE_TIME", StringType(), True),
 StructField("ENTITY_LAST_UPDATE_TIME", StringType(), True),
 StructField("Source_Sent_Date", StringType(), True),
@@ -65,12 +62,13 @@ for file in filelist1.split(","):
     df=spark.read.format('csv').option('delimiter',"|").schema(dfSchema).load(mountPoint+SourcePath+"/"+foldername+".psv")
    # df.show()
     df1=df.toPandas()
-    df1.insert(8,'Source_Sent_Date',dfo[3],True)
-    df1.insert(9,'Source_Sent_Time',dfo[4],True)
+    df1.insert(7,'Source_Sent_Date',dfo[4],True)
+    df1.insert(8,'Source_Sent_Time',dfo[5],True)
     df1=df1[1:]
     df2=spark.createDataFrame(df1,schema=dfSchema1)
     #display(df2)
     df2.write.mode('append').format("parquet").save(tgtmountPoint+DestinationPath+"/"+RunDate+RunTime+"/")
+    
 
 # COMMAND ----------
 
