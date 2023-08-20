@@ -529,6 +529,9 @@ def main():
     # description_json = json.loads(pr_json['description'])
     # job_run_list = get_job_runs_from_description(pr_id, description_json)
     raw_description = get_pr_description()
+    if not raw_description:
+        print("Nothing to do without description, skipping!!")
+        sys.exit(0)
     description = " ".join(raw_description.splitlines())
     description = re.sub(cleanRe, "", description)
     job_run_list = get_job_runs_from_description_as_text(pr_number, description)
