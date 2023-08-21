@@ -245,11 +245,14 @@ def fetch_app_summary(unravel_url, unravel_token, clusterUId, appId):
     app_summary_map_for_jira_comments["Cluster"] = "[{}|{}]".format(
         clusterUId, cluster_url
     )
+
+    estimated_cost = summary_dict["cents"] + summary_dict["dbuCost"]
+    
     app_summary_map_for_git_comment["Estimated cost"] = "$ {}".format(
-        summary_dict["cents"] + summary_dict["dbuCost"]
+        round(estimated_cost, 3)
     )
     app_summary_map_for_jira_comments["Estimated cost"] = "$ {}".format(
-        summary_dict["cents"] + summary_dict["dbuCost"]
+        round(estimated_cost, 3)
     )
     runinfo = json.loads(summary_dict["runInfo"])
     app_summary_map_for_git_comment["Executor Node Type"] = runinfo["node_type_id"]
