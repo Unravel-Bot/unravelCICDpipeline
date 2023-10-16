@@ -603,7 +603,7 @@ def create_es_document(gsp, cluster_name, cluster_uid, job):
     document['staticRank'] = 2
     document['dynamicRank'] = 2
     document['title'] = "CICD Documnt"
-    document['detail'] = detail_dict
+    document['detail'] = "detail_dict"
     document['actions'] = "null"
     document['job'] = job
     return document
@@ -720,7 +720,7 @@ def main():
         message_with_mentions = message + " " + " ".join(formatted_user_ids)
 
         try:
-            send_markdown_to_slack(channel, message_with_mentions)
+            # send_markdown_to_slack(channel, message_with_mentions)
             notification_sent = True
         except:
             notification_sent = False
