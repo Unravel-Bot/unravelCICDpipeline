@@ -575,7 +575,7 @@ def send_update_to_unravel(notification_sent,user_ids,jira_link,pr_url,pr_number
         id = documents['job']
         event_time = documents['eventTime']
         documents = json.dumps(documents)
-        index = index_for_timestamp('ev-', event_time)
+        index = index_for_timestamp('ev-', str(event_time))
         body = f'{index} event {id} {5} {documents}'
         try:
             r = http.request('PUT', f'{lr_url}/logs/hl/hl/{id}/_bulkr', body=body, headers=headers)
