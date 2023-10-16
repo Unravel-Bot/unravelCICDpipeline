@@ -583,12 +583,13 @@ def send_update_to_unravel(notification_sent,user_ids,jira_link,pr_url,pr_number
         documents = json.dumps(documents)
         index = index_for_timestamp('ev-', event_time)
         body = f'{index} event {id} {5} {documents}'
+        print(body)
         try:
             r = http.request('PUT', f'{lr_url}/logs/hl/hl/{id}/_bulkr', body=body, headers=headers)
             if r.status // 100 != 2:
                 print(f'LR request failed: status={r.status} body={body} resp={r.data.decode()}')
             else:
-                print("eno")
+                print("request sent to LR")
         except Exception as err:
             print(f'LR request failed: body={body} error={err}')
 
