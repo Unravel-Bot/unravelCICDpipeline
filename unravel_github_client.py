@@ -565,7 +565,7 @@ def index_for_timestamp(prefix, ts):
     sunday = str(datetime.fromordinal(d - (d % 7)))[8:10]
     saturday = str(datetime.fromordinal(d - (d % 7) + 6))[8:10]
     return prefix + year + month + sunday + "_" + saturday
-                                
+
 def send_update_to_unravel(notification_sent,user_ids,jira_link,pr_url,pr_number,repo_name,es_document_list):
     detail_dict = {}
     detail_dict['agent'] = "GitHub"
@@ -577,8 +577,9 @@ def send_update_to_unravel(notification_sent,user_ids,jira_link,pr_url,pr_number
     detail_dict['imsLink'] = jira_link
     detail_dict['notificationSent'] = notification_sent
     for documents in es_document_list:
-        documents['details'] = detail_dict
+        documents['detail'] = detail_dict
         id = documents['job']
+        del documents['job']
         event_time = documents['eventTime']
         documents = json.dumps(documents)
         index = index_for_timestamp('ev-', event_time)
@@ -593,7 +594,7 @@ def send_update_to_unravel(notification_sent,user_ids,jira_link,pr_url,pr_number
         except Exception as err:
             print(f'LR request failed: body={body} error={err}')
 
-    
+
 
 def create_es_document(gsp, cluster_name, cluster_uid, job):
     document = {}
@@ -615,7 +616,7 @@ def create_es_document(gsp, cluster_name, cluster_uid, job):
     document['actions'] = "null"
     document['job'] = job
     return document
-    
+
 
 # %%
 def main():
@@ -689,9 +690,9 @@ def main():
                 run["jir_app_summary"] = jira_summary
                 # add to the list
                 job_run_result_list.append(run)
-                
+
                 es_document_list.append(create_es_document(gsp,appId,clusterUId, run["job_id"]))
-                
+
         else:
             print("job_run not found: " + gsp)
 
