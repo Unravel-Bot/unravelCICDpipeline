@@ -14,6 +14,7 @@ import markdown
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 http = urllib3.PoolManager(cert_reqs='CERT_NONE')
+headers = {'Content-Type': 'application/json'}
 # %%
 # DBRKS URL pattern
 pattern = r"^https://adb-([0-9]+).([0-9]+).azuredatabricks.net/\?o=([0-9]+)#job/([0-9]+)/run/([0-9]+)$"
