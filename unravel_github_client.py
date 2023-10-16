@@ -578,7 +578,7 @@ def send_update_to_unravel(notification_sent,user_ids,jira_link,pr_url,pr_number
     detail_dict['imsLink'] = jira_link
     detail_dict['notificationSent'] = notification_sent
     for documents in es_document_list:
-        documents['detail'] = detail_dict
+        documents['detail'] = str(detail_dict)
         id = documents['job']
         del documents['job']
         event_time = documents['eventTime']
