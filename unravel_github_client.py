@@ -268,8 +268,8 @@ def fetch_app_summary(unravel_url, unravel_token, clusterUId, appId):
         "driver_node_type_id"
     ]
     app_summary_map_for_git_comment["Tags"] = runinfo["default_tags"]
-    tags = json.loads(runinfo["default_tags"])
-    cluster_name = tags['ClusterName']
+    # tags = json.loads(runinfo["default_tags"])
+    cluster_name = runinfo["default_tags"]['ClusterName']
     app_summary_map_for_jira_comments["Tags"] = runinfo["default_tags"]
     if "custom_tags" in runinfo.keys():
         app_summary_map_for_git_comment["Tags"] = {
