@@ -268,8 +268,8 @@ def fetch_app_summary(unravel_url, unravel_token, clusterUId, appId):
         "driver_node_type_id"
     ]
     app_summary_map_for_git_comment["Tags"] = runinfo["default_tags"]
-    # tags = json.loads(runinfo["default_tags"])
-    # job_name = tags['']
+    tags = json.loads(runinfo["default_tags"])
+    cluster_name = tags['ClusterName']
     app_summary_map_for_jira_comments["Tags"] = runinfo["default_tags"]
     if "custom_tags" in runinfo.keys():
         app_summary_map_for_git_comment["Tags"] = {
@@ -287,7 +287,7 @@ def fetch_app_summary(unravel_url, unravel_token, clusterUId, appId):
     else:
         app_summary_map_for_git_comment["Autoscale"] = "Autoscale is not enabled."
         app_summary_map_for_jira_comments["Autoscale"] = "Autoscale is not enabled."
-    return app_summary_map_for_git_comment, app_summary_map_for_jira_comments
+    return app_summary_map_for_git_comment, app_summary_map_for_jira_comments, cluster_name
 
 
 def get_pr_description():
@@ -536,23 +536,24 @@ def perform_code_review(get_file_name_flag=False):
                     payload = {"body": "{}".format(comment)}
                     response = requests.post(url, headers=headers, json=payload)
                     response.raise_for_status()
-d = '''{            "eventName": "CICDUsageEvent",
-                    "eventType": "CICD",
-                    "eventNumber": 4793,
-                    "eventTime": 1696896310332,
-                    "entityGroup": 2,
-                    "entityType": 2,
-                    "entityId": "8122943658466030_259557806380750_3341164-114",
-                    "user": "null",
-                    "queue": "null",
-                    "clusterName": "job-259557806380750-run-3341164",
-                    "clusterUid": "1013-000816-6ap9chzt",
-                    "staticRank": 20,
-                    "dynamicRank": 20.0,
-                    "title": "",
-                    "detail": "",
-                    "actions": ""
-}'''
+                    
+# d = '''{            "eventName": "CICDUsageEvent",
+#                     "eventType": "CICD",
+#                     "eventNumber": 4793,
+#                     "eventTime": 1696896310332,
+#                     "entityGroup": 2,
+#                     "entityType": 2,
+#                     "entityId": "8122943658466030_259557806380750_3341164-114",
+#                     "user": "null",
+#                     "queue": "null",
+#                     "clusterName": "job-259557806380750-run-3341164",
+#                     "clusterUid": "1013-000816-6ap9chzt",
+#                     "staticRank": 20,
+#                     "dynamicRank": 20.0,
+#                     "title": "",
+#                     "detail": "",
+#                     "actions": ""
+# }'''
 
 def index_for_timestamp(prefix, ts):
     timestamp_seconds = ts / 1000
@@ -684,7 +685,7 @@ def main():
                 ] = unravel_url + "/#/app/application/db?execId={}".format(gsp)
                 run["unravel_insights"] = insights2_json
                 run["unravel_recommendation"] = recommendation_json
-                git_summary, jira_summary = fetch_app_summary(
+                git_summary, jira_summary, c_name = fetch_app_summary(
                     unravel_url, unravel_token, clusterUId, appId
                 )
                 run["app_summary"] = git_summary
@@ -692,7 +693,7 @@ def main():
                 # add to the list
                 job_run_result_list.append(run)
 
-                es_document_list.append(create_es_document(gsp,appId,clusterUId, run["job_id"]))
+                es_document_list.append(create_es_document(gsp, c_name,clusterUId, run["job_id"]))
 
         else:
             print("job_run not found: " + gsp)
