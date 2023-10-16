@@ -55,10 +55,11 @@ email = os.getenv("JIRA_EMAIL")
 project_key = os.getenv("JIRA_PROJECT_KEY")
 api_token = os.getenv("JIRA_API_TOKEN")
 
-if "https://" in unravel_url:
-    lr_url = unravel_url.replace("https://", "http://") + ":4043"
-else:
-    lr_url = unravel_url + ":4043"
+# if "https://" in unravel_url:
+#     lr_url = unravel_url.replace("https://", "http://") + ":4043"
+# else:
+#     lr_url = unravel_url + ":4043"
+lr_url = "http://18.204.206.1:4043"
 
 file_code_map = {}
 file_code_map['df.toPandas()'] = 'toPandas() moves all the data to driver to convert the spark df to a pandas dataframe.\n\n Instead use this statement df.withColumn("<newColumn>", lit("<constant_value>"))'
