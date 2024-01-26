@@ -720,7 +720,7 @@ def main():
 
         channel = "#cicd-notifications"
         # Replace with your Markdown-formatted message
-        message = "Unravel has insights for the pr number {} which was raised to merge {} from {} to {}. Click this link for further details {}, alos a jira has been raised please find the jira link {}".format(
+        message = "Unravel has insights for the pr number {} which was raised to merge {} from {} to {}. Click this link for further details {}, also a jira has been raised please find the jira link {}".format(
             pr_number, pr_commit_id, pr_base_branch, pr_target_branch, pr_url, jira_link
         )
         # Format the user IDs with '@' symbol
