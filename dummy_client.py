@@ -569,50 +569,43 @@ def create_comments_with_markdown(mk_list):
 # %%
 def main():
     mk_list = []
-    mk_list.append({"key":"Category: Code Inefficiency", "mk":'''### Insight: Inefficient Join Condition
+    mk_list.append({"key":"Category: Code Inefficiency", "mk":'''## Insight: Inefficient Join Condition
 
-**Problem:**
+### Problem:
+Operator(s) `SortMergeJoin` of Job `fraud-ml` Stage 22 have an inefficient join condition `pf_id#933 = pf_id#935`. The total joined rows exceed the maximum number of rows from either of the left and right join tables by a factor of 300x. This suggests that the join keys may have low cardinality. It typically happens due to uneven key distributions or changes in data characteristics in dynamic workloads.
 
-Operator(s) [O1, O2... O3] of Job `<X>` have an inefficient join condition. The total joined rows exceed the maximum number of rows from either of the left and right join tables by a factor of `<Y>`. This suggests that the join keys (`J1 = J2`) may have low cardinality. It typically happens due to uneven key distributions or changes in data characteristics in dynamic workloads.
+### Impact:
+- This problem has affected 137/137 (100%) runs in the past month.
+- Applying the recommended insights can make the runs 34% faster on average.
+- Diagnosing this issue has saved your team $3750 (39 hours) in troubleshooting efforts.
 
-**Impact:**
-
-This problem has affected 137/137 (100%) runs in the past month. Applying the recommended insights can make the runs `<Z1>%` faster on average. Diagnosing this issue has saved your team `$<Z2>` (`<Z3>` hours) in troubleshooting efforts.
-
-**Pre-Checks:**
-
+### Pre-Checks:
 Verify if there are a lot of null values in tables used in the join or group-by keys. If yes, preprocess the null values before proceeding with the solutions below if necessary.
 
-**Remediation:**
-
-**Solution 1: Re-partition the Data**
-*Actionability: Intermediate*
-
-1. Click to go to the `<Analysis>` tab; review the join conditions and keys displayed in the insight table.
+### Remediation:
+#### Solution 1: Re-partition the Data (Actionability: Intermediate)
+1. Click to go to the Analysis tab; review the join conditions and keys displayed in the insight table.
 2. Check for any skewness (an uneven distribution of data) in the tables involved in the join condition. If skewness is found, consider repartitioning the data before the join.
 
-**Solution 2: Salting Technique**
-*Actionability: Intermediate*
-
+#### Solution 2: Salting Technique (Actionability: Immediate)
 Consider altering the join key to ensure even distribution of data using the salting method. For instance, if data skew is caused by a specific column (key), adding a random partitioning key can help to evenly distribute the data as follows:
-
 ```scala
 val modifiedKeyForData = origDataSkew.map { case (key, value) => (key + scala.util.Random.nextInt(currentPartitions), value) }
 val dataSkewFixed = modifiedKeyForData.partitionBy(currentPartitions)
 ```
 '''})
 
-    mk_list.append({"key":"Category: Over-Provisioning", "mk":'''### Insight: Node Resizing for Jobs Compute
+    mk_list.append({"key":"Category: Over-Provisioning", "mk":'''## Insight: Node Resizing for Jobs Compute
 
-**Problem:**
+### Problem:
+Resources for Job `fraud-ml` are currently over-provisioned. Currently, the driver and worker instance types are `Standard_F4` and `Standard_F4` respectively, resulting in a $35 cost for the job for the past 10 days. It is recommended to change the driver node to `Standard_L4s` and the worker node to `Standard_L4s` respectively to maximize cost savings.
 
-Resources for Job `<X>` are currently over-provisioned. Currently, the driver and worker instance types are `instance_d` and `instance_e` respectively, resulting in `$<X>` cost for the job for the past 10 days. Recommend changing `instance_d` to `instance_d_new` and `instance_e` to `instance_e_new` respectively to maximize cost savings.
+### Impact:
+- This problem has affected 43/137 (31%) runs.
+- Applying the recommended insights could have resulted in untapped savings of up to $23 in the last 10 days, and $276 annualized.
+- Diagnosing this issue has saved $2124 (22 hours) in troubleshooting efforts.
 
-**Impact:**
-
-This problem has affected 43/137 (31%) runs in the past 10 days. Applying the recommended insights could have resulted in untapped savings of up to `$<Z1>` in the last 10 days, and `$<Z2>` annualized. Diagnosing this issue has saved `$<Z2>` (`<Z3>` hours) in troubleshooting efforts.
-
-**Remediation:**
+### Remediation:
 
 
 <div class=\"mb-4\">
@@ -759,20 +752,22 @@ This problem has affected 43/137 (31%) runs in the past 10 days. Applying the re
     mk_list.append({"key":"Category: Failure", "mk":'''## Insight: Driver Error Due to OOM
 
 ### Problem:
-The driver for Job <X> has failed due to an out of memory (OOM) issue, caused by low memory configuration. The provisioned memory for the `instance_d` driver node type is 8GB. Due to data variance, the memory usage in the last 15 days has ranged from a minimum of 6GB to a maximum of 13GB.
+Driver for Job `fraud-ml` has failed due to an out of memory (OOM) issue. This was a result of low memory configuration. The provisioned memory for `instance_d` driver node type is 8GB and due to data variance; the min memory usage in the last 15 days was 6GB and max usage was 13GB.
 
 ### Impact:
-This problem has affected 16 out of 137 runs (approximately 9%) in the past 15 days. This has resulted in a significant amount of wasted execution time and incurred costs. Specifically, it has led to:
-- **Wasted Execution Time**: X minutes (or hours) of wasted execution time.
-- **Wasted Cost**: $Y wasted cost last month.
-
-Applying the recommended insights can lead to potential savings of up to $<Z1>. Diagnosing this issue has saved $<Z2> (Z3 hours) in troubleshooting efforts.
+- This problem has affected 16/137 (9%) runs in the past 15 days.
+- This has resulted in 96 hours of wasted execution time and $17 wasted cost last month.
+- Applying the recommended insights can lead to potential savings of up to $145 in the next month.
+- Diagnosing this issue has saved $1217 (12 hours) in troubleshooting efforts.
 
 ### Remediation:
-To enhance driver performance, increase the memory allocation to 16GB by adjusting the `spark.driver.memory` configuration. Additionally, ensure pandas dataframe operations are avoided in PySpark code; instead consider leveraging `pandas_api()` functions.
+- Increase the memory allocation to 16GB by adjusting the `spark.driver.memory` configuration to enhance driver performance.
+- Ensure pandas dataframe operations are avoided in PySpark code; instead consider leveraging `pandas_api()` functions.
 
 ### Post-Checks:
-In client mode, this config must not be set through the `SparkConf` directly in your application, because the driver JVM has already started at that point. Instead, please set this through the `--driver-memory` command line option or in your default properties file. Reference: [Spark Configuration](https://spark.apache.org/docs/latest/configuration.html)'''})
+In client mode, this config must not be set through the `SparkConf` directly in your application, because the driver JVM has already started at that point. Instead, please set this through the `--driver-memory` command line option or in your default properties file. 
+
+Reference: [Spark Configuration](https://spark.apache.org/docs/latest/configuration.html)'''})
     
 
     if True:
