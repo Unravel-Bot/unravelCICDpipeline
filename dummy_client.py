@@ -560,7 +560,7 @@ def create_comments_with_markdown(mk_list):
         comments += "<summary> <img src='https://www.unraveldata.com/wp-content/themes/unravel-child/src/images/unLogo.svg' alt='Logo'> <b>Code Inefficiency (<Z%> faster)</b></summary>\n\n"
         comments += "\n"
         comments += mk
-        comments += "\n\n</details>\n"
+        comments += "</details>"
     return comments
 
 
@@ -598,6 +598,148 @@ Consider altering the join key to ensure even distribution of data using the sal
 ```scala
 val modifiedKeyForData = origDataSkew.map { case (key, value) => (key + scala.util.Random.nextInt(currentPartitions), value) }
 val dataSkewFixed = modifiedKeyForData.partitionBy(currentPartitions)''')
+
+    mk_list.append('''
+<div class=\"mb-4\">
+    <div class=\"mb-1\" style=\"color: var(--neutral-130);\">
+        UNTAPPED SAVINGS 
+        <i style=\"cursor:pointer\" class=\"v2-info\" title=\"Calculation is based on last 10 days (configurable) of runs if the recommended instance was used.\"></i>
+    </div>
+    <div class=\"d-flex mb-3\">
+        <h4>$ 1.99</h4>
+        <p class=\"ml-1\" style=\"font-style:italic\">in the last 10 days for 1 run</p>
+    </div>
+    <div>
+        <div class=\"unravel-card shadow\">
+            <div class=\"v2 unravel-table-container compact-table p-0\">
+                <div class=\"table-title\">
+                    <h5>Driver node recommendations</h5>
+                    <div class=\"mt-2\" style=\"color:var(--neutral-120)\">Based on data from 2024-05-01 07:45:45 UTC to 2024-05-11 07:45:45 UTC.</div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th class=\"text-left text-ellipsis\"></th>
+                            <th class=\"text-left text-ellipsis\">Current instance</th>
+                            <th class=\"text-left text-ellipsis\">
+                                Option 1  
+                                <span style=\"background-color:#486AE3;color:var(--neutral-10);padding:4px;border-radius:4px;font-weight:normal;font-size:10px\">Max savings</span>
+                            </th>
+                            <th class=\"text-left text-ellipsis\">Option 2</th>
+                            <th class=\"text-left text-ellipsis\">Option 3</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class=\"text-ellipsis\">Compute</td>
+                            <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\">Standard_D16s_v3</td>
+                            <td class=\"text-ellipsis\">Standard_L8s</td>
+                            <td class=\"text-ellipsis\">Standard_D8d_v4</td>
+                            <td class=\"text-ellipsis\">Standard_D8ads_v5</td>
+                        </tr>
+                        <tr>
+                            <td class=\"text-ellipsis\">Memory</td>
+                            <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\">64 GiB</td>
+                            <td class=\"text-ellipsis\">64 GiB</td>
+                            <td class=\"text-ellipsis\">32 GiB</td>
+                            <td class=\"text-ellipsis\">32 GiB</td>
+                        </tr>
+                        <tr>
+                            <td class=\"text-ellipsis\">Cores</td>
+                            <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\">16 cores</td>
+                            <td class=\"text-ellipsis\">8 cores</td>
+                            <td class=\"text-ellipsis\">8 cores</td>
+                            <td class=\"text-ellipsis\">8 cores</td>
+                        </tr>
+                        <tr>
+                            <td class=\"text-ellipsis\">Price per hour</td>
+                            <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\">$ 1.22 /hr</td>
+                            <td class=\"text-ellipsis\">$ 0.30 /hr</td>
+                            <td class=\"text-ellipsis\">$ 0.68 /hr</td>
+                            <td class=\"text-ellipsis\">$ 0.71 /hr</td>
+                        </tr>
+                        <tr>
+                            <td>Type</td>
+                            <td style=\"color:var(--neutral-120)\">General purpose</td>
+                            <td>Storage optimized</td>
+                            <td>General purpose</td>
+                            <td>General purpose</td>
+                        </tr>
+                        <tr>
+                            <td class=\"text-ellipsis\">Potential savings per run</td>
+                            <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\"></td>
+                            <td class=\"text-ellipsis\">$ 0.5429 (15.00 %)</td>
+                            <td class=\"text-ellipsis\">$ 0.3185 (8.80 %)</td>
+                            <td class=\"text-ellipsis\">$ 0.2968 (8.19 %)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+    <div class=\"unravel-card shadow\">
+        <div class=\"v2 unravel-table-container compact-table p-0\">
+            <div class=\"table-title\">
+                <h5>Worker node recommendations</h5>
+                <div class=\"mt-2\" style=\"color:var(--neutral-120)\">Based on data from 2024-05-01 07:45:45 UTC to 2024-05-11 07:45:45 UTC.</div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th class=\"text-left text-ellipsis\"></th>
+                        <th class=\"text-left text-ellipsis\">Current instance</th>
+                        <th class=\"text-left text-ellipsis\">
+                            Option 1  
+                            <span style=\"background-color:#486AE3;color:var(--neutral-10);padding:4px;border-radius:4px;font-weight:normal;font-size:10px\">Max savings</span>
+                        </th>
+                        <th class=\"text-left text-ellipsis\">Option 2</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class=\"text-ellipsis\">Compute</td>
+                        <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\">Standard_D16s_v3</td>
+                        <td class=\"text-ellipsis\">Standard_L16s</td>
+                        <td class=\"text-ellipsis\">Standard_L32s</td>
+                    </tr>
+                    <tr>
+                        <td class=\"text-ellipsis\">Memory</td>
+                        <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\">64.0 GiB</td>
+                        <td class=\"text-ellipsis\">128 GiB</td>
+                        <td class=\"text-ellipsis\">256 GiB</td>
+                    </tr>
+                    <tr>
+                        <td class=\"text-ellipsis\">Cores</td>
+                        <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\">16 cores</td>
+                        <td class=\"text-ellipsis\">16 cores</td>
+                        <td class=\"text-ellipsis\">32 cores</td>
+                    </tr>
+                    <tr>
+                        <td class=\"text-ellipsis\">Price per hour</td>
+                        <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\">$ 1.22 /hr</td>
+                        <td class=\"text-ellipsis\">$ 0.60 /hr</td>
+                        <td class=\"text-ellipsis\">$ 1.20 /hr</td>
+                    </tr>
+                    <tr>
+                        <td>Type</td>
+                        <td style=\"color:var(--neutral-120)\">General purpose</td>
+                        <td>Storage optimized</td>
+                        <td>Storage optimized</td>
+                    </tr>
+                    <tr>
+                        <td class=\"text-ellipsis\">Potential savings per run</td>
+                        <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\"></td>
+                        <td class=\"text-ellipsis\">$ 1.4477 (40.00 %)</td>
+                        <td class=\"text-ellipsis\">$ 0.0290 (0.80 %)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</div>''')
 
     if True:
         # unravel_comments = re.sub(cleanRe, '', json.dumps(job_run_result_list, indent=4))
