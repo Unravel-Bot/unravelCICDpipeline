@@ -557,9 +557,9 @@ def create_comments_with_markdown(mk_list):
     for mk in mk_list:
         comments += "\n----\n"
         comments += "<details>\n"
-        comments += "<summary> <h2><b>Code Inefficiency (<Z%> faster)</b></h2></summary>\n\n"
+        comments += "<summary> <h2><b>{}</b></h2></summary>\n\n".format(mk['key']
         comments += "\n"
-        comments += mk
+        comments += mk['mk']
         comments += "\n"
         comments += "</details>\n\n"
     return comments
@@ -569,7 +569,7 @@ def create_comments_with_markdown(mk_list):
 # %%
 def main():
     mk_list = []
-    mk_list.append('''## Category: Code Inefficiency
+    mk_list.append({"key":"Code Inefficiency", "mk":'''## Category: Code Inefficiency
 
 ### Insight: Inefficient Join Condition
 
@@ -602,11 +602,9 @@ Consider altering the join key to ensure even distribution of data using the sal
 val modifiedKeyForData = origDataSkew.map { case (key, value) => (key + scala.util.Random.nextInt(currentPartitions), value) }
 val dataSkewFixed = modifiedKeyForData.partitionBy(currentPartitions)
 ```
-''')
+'''}
 
-    mk_list.append('''## Category: Over-Provisioning
-
-### Insight: Node Resizing for Jobs Compute
+    mk_list.append({"key":"Category: Over-Provisioning", "mk":'''### Insight: Node Resizing for Jobs Compute
 
 **Problem:**
 
@@ -758,7 +756,26 @@ This problem has affected 43/137 (31%) runs in the past 10 days. Applying the re
         </div>
     </div>
 </div>
-</div>''')
+</div>'''})
+
+    mk_list.append({"key":"Category: Failure", "mk":'''## Insight: Driver Error Due to OOM
+
+### Problem:
+The driver for Job <X> has failed due to an out of memory (OOM) issue, caused by low memory configuration. The provisioned memory for the `instance_d` driver node type is 8GB. Due to data variance, the memory usage in the last 15 days has ranged from a minimum of 6GB to a maximum of 13GB.
+
+### Impact:
+This problem has affected 16 out of 137 runs (approximately 9%) in the past 15 days. This has resulted in a significant amount of wasted execution time and incurred costs. Specifically, it has led to:
+- **Wasted Execution Time**: X minutes (or hours) of wasted execution time.
+- **Wasted Cost**: $Y wasted cost last month.
+
+Applying the recommended insights can lead to potential savings of up to $<Z1>. Diagnosing this issue has saved $<Z2> (Z3 hours) in troubleshooting efforts.
+
+### Remediation:
+To enhance driver performance, increase the memory allocation to 16GB by adjusting the `spark.driver.memory` configuration. Additionally, ensure pandas dataframe operations are avoided in PySpark code; instead consider leveraging `pandas_api()` functions.
+
+### Post-Checks:
+In client mode, this config must not be set through the `SparkConf` directly in your application, because the driver JVM has already started at that point. Instead, please set this through the `--driver-memory` command line option or in your default properties file. Reference: [Spark Configuration](https://spark.apache.org/docs/latest/configuration.html)'''})
+    
 
     if True:
         # unravel_comments = re.sub(cleanRe, '', json.dumps(job_run_result_list, indent=4))
