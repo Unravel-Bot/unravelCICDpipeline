@@ -586,12 +586,14 @@ Verify if there are a lot of null values in tables used in the join or group-by 
 
 **Remediation:**
 
-**Solution 1: Re-partition the Data (Actionability: Intermediate)**
+**Solution 1: Re-partition the Data**
+*Actionability: Intermediate*
 
 1. Click to go to the `<Analysis>` tab; review the join conditions and keys displayed in the insight table.
 2. Check for any skewness (an uneven distribution of data) in the tables involved in the join condition. If skewness is found, consider repartitioning the data before the join.
 
-**Solution 2: Salting Technique (Actionability: Immediate)**
+**Solution 2: Salting Technique**
+*Actionability: Intermediate*
 
 Consider altering the join key to ensure even distribution of data using the salting method. For instance, if data skew is caused by a specific column (key), adding a random partitioning key can help to evenly distribute the data as follows:
 
@@ -599,7 +601,21 @@ Consider altering the join key to ensure even distribution of data using the sal
 val modifiedKeyForData = origDataSkew.map { case (key, value) => (key + scala.util.Random.nextInt(currentPartitions), value) }
 val dataSkewFixed = modifiedKeyForData.partitionBy(currentPartitions)''')
 
-    mk_list.append('''
+    mk_list.append('''## Category: Over-Provisioning
+
+### Insight: Node Resizing for Jobs Compute
+
+**Problem:**
+
+Resources for Job `<X>` are currently over-provisioned. Currently, the driver and worker instance types are `instance_d` and `instance_e` respectively, resulting in `$<X>` cost for the job for the past 10 days. Recommend changing `instance_d` to `instance_d_new` and `instance_e` to `instance_e_new` respectively to maximize cost savings.
+
+**Impact:**
+
+This problem has affected 43/137 (31%) runs in the past 10 days. Applying the recommended insights could have resulted in untapped savings of up to `$<Z1>` in the last 10 days, and `$<Z2>` annualized. Diagnosing this issue has saved `$<Z2>` (`<Z3>` hours) in troubleshooting efforts.
+
+**Remediation:**
+
+
 <div class=\"mb-4\">
     <div class=\"mb-1\" style=\"color: var(--neutral-130);\">
         UNTAPPED SAVINGS 
