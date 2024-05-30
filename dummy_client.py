@@ -557,47 +557,47 @@ def create_comments_with_markdown(mk_list):
     for mk in mk_list:
         comments += "----\n"
         comments += "<details>\n"
-        comments += "<summary><img src='https://www.unraveldata.com/wp-content/themes/unravel-child/src/images/unLogo.svg' alt='Logo'> <b>Code Inefficiency (<Z%> faster)</b></summary>\n\n"
-        comments += "\n</details>\n"
+        comments += "<summary> <img src='https://www.unraveldata.com/wp-content/themes/unravel-child/src/images/unLogo.svg' alt='Logo'> <b>Code Inefficiency (<Z%> faster)</b></summary>\n\n"
+        comments += "\n"
         comments += mk
-        comments += "----\n"
+        comments += "\n\n</details>\n"
     return comments
+
 
 
 # %%
 def main():
     mk_list = []
-    mk_list.append('''
-                ## Category: Code Inefficiency
-                
-                ### Insight: Inefficient Join Condition
-                
-                **Problem:**
-                
-                Operator(s) [O1, O2... O3] of Job `<X>` have an inefficient join condition. The total joined rows exceed the maximum number of rows from either of the left and right join tables by a factor of `<Y>`. This suggests that the join keys (`J1 = J2`) may have low cardinality. It typically happens due to uneven key distributions or changes in data characteristics in dynamic workloads.
-                
-                **Impact:**
-                
-                This problem has affected 137/137 (100%) runs in the past month. Applying the recommended insights can make the runs `<Z1>%` faster on average. Diagnosing this issue has saved your team `$<Z2>` (`<Z3>` hours) in troubleshooting efforts.
-                
-                **Pre-Checks:**
-                
-                Verify if there are a lot of null values in tables used in the join or group-by keys. If yes, preprocess the null values before proceeding with the solutions below if necessary.
-                
-                **Remediation:**
-                
-                **Solution 1: Re-partition the Data (Actionability: Intermediate)**
-                
-                1. Click to go to the `<Analysis>` tab; review the join conditions and keys displayed in the insight table.
-                2. Check for any skewness (an uneven distribution of data) in the tables involved in the join condition. If skewness is found, consider repartitioning the data before the join.
-                
-                **Solution 2: Salting Technique (Actionability: Immediate)**
-                
-                Consider altering the join key to ensure even distribution of data using the salting method. For instance, if data skew is caused by a specific column (key), adding a random partitioning key can help to evenly distribute the data as follows:
-                
-                ```scala
-                val modifiedKeyForData = origDataSkew.map { case (key, value) => (key + scala.util.Random.nextInt(currentPartitions), value) }
-                val dataSkewFixed = modifiedKeyForData.partitionBy(currentPartitions)''')
+    mk_list.append('''## Category: Code Inefficiency
+
+### Insight: Inefficient Join Condition
+
+**Problem:**
+
+Operator(s) [O1, O2... O3] of Job `<X>` have an inefficient join condition. The total joined rows exceed the maximum number of rows from either of the left and right join tables by a factor of `<Y>`. This suggests that the join keys (`J1 = J2`) may have low cardinality. It typically happens due to uneven key distributions or changes in data characteristics in dynamic workloads.
+
+**Impact:**
+
+This problem has affected 137/137 (100%) runs in the past month. Applying the recommended insights can make the runs `<Z1>%` faster on average. Diagnosing this issue has saved your team `$<Z2>` (`<Z3>` hours) in troubleshooting efforts.
+
+**Pre-Checks:**
+
+Verify if there are a lot of null values in tables used in the join or group-by keys. If yes, preprocess the null values before proceeding with the solutions below if necessary.
+
+**Remediation:**
+
+**Solution 1: Re-partition the Data (Actionability: Intermediate)**
+
+1. Click to go to the `<Analysis>` tab; review the join conditions and keys displayed in the insight table.
+2. Check for any skewness (an uneven distribution of data) in the tables involved in the join condition. If skewness is found, consider repartitioning the data before the join.
+
+**Solution 2: Salting Technique (Actionability: Immediate)**
+
+Consider altering the join key to ensure even distribution of data using the salting method. For instance, if data skew is caused by a specific column (key), adding a random partitioning key can help to evenly distribute the data as follows:
+
+```scala
+val modifiedKeyForData = origDataSkew.map { case (key, value) => (key + scala.util.Random.nextInt(currentPartitions), value) }
+val dataSkewFixed = modifiedKeyForData.partitionBy(currentPartitions)''')
 
     if True:
         # unravel_comments = re.sub(cleanRe, '', json.dumps(job_run_result_list, indent=4))
@@ -609,7 +609,7 @@ def main():
             "Authorization": f"Bearer {access_token}",
             "Accept": "application/vnd.github.v3+json",
         }
-        payload = {"body": "{}".format(mk_list[0])}
+        payload = {"body": "{}".format(unravel_comments)}
         response = requests.post(url, headers=headers, json=payload)
         response.raise_for_status()
 
