@@ -614,7 +614,7 @@ Resources for Job `fraud-ml` are currently over-provisioned. Currently, the driv
         <i style=\"cursor:pointer\" class=\"v2-info\" title=\"Calculation is based on last 10 days (configurable) of runs if the recommended instance was used.\"></i>
     </div>
     <div class=\"d-flex mb-3\">
-        <h4>$ 1.99</h4>
+        <h4>$ 0.12</h4>
         <p class=\"ml-1\" style=\"font-style:italic\">in the last 10 days for 1 run</p>
     </div>
     <div>
@@ -622,63 +622,46 @@ Resources for Job `fraud-ml` are currently over-provisioned. Currently, the driv
             <div class=\"v2 unravel-table-container compact-table p-0\">
                 <div class=\"table-title\">
                     <h5>Driver node recommendations</h5>
-                    <div class=\"mt-2\" style=\"color:var(--neutral-120)\">Based on data from 2024-05-01 07:45:45 UTC to 2024-05-11 07:45:45 UTC.</div>
+                    <div class=\"mt-2\" style=\"color:var(--neutral-120)\">Based on data from 2024-05-14 05:56:35 UTC to 2024-05-24 05:56:35 UTC.</div>
                 </div>
                 <table>
                     <thead>
                         <tr>
                             <th class=\"text-left text-ellipsis\"></th>
                             <th class=\"text-left text-ellipsis\">Current instance</th>
-                            <th class=\"text-left text-ellipsis\">
-                                Option 1  
-                                <span style=\"background-color:#486AE3;color:var(--neutral-10);padding:4px;border-radius:4px;font-weight:normal;font-size:10px\">Max savings</span>
-                            </th>
-                            <th class=\"text-left text-ellipsis\">Option 2</th>
-                            <th class=\"text-left text-ellipsis\">Option 3</th>
+                            <th class=\"text-left text-ellipsis\">Recommended Instance</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td class=\"text-ellipsis\">Compute</td>
-                            <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\">Standard_D16s_v3</td>
-                            <td class=\"text-ellipsis\">Standard_L8s</td>
-                            <td class=\"text-ellipsis\">Standard_D8d_v4</td>
-                            <td class=\"text-ellipsis\">Standard_D8ads_v5</td>
+                            <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\">Standard_F4</td>
+                            <td class=\"text-ellipsis\">Standard_L4s</td>
                         </tr>
                         <tr>
                             <td class=\"text-ellipsis\">Memory</td>
-                            <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\">64 GiB</td>
-                            <td class=\"text-ellipsis\">64 GiB</td>
-                            <td class=\"text-ellipsis\">32 GiB</td>
+                            <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\">8 GiB</td>
                             <td class=\"text-ellipsis\">32 GiB</td>
                         </tr>
                         <tr>
                             <td class=\"text-ellipsis\">Cores</td>
-                            <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\">16 cores</td>
-                            <td class=\"text-ellipsis\">8 cores</td>
-                            <td class=\"text-ellipsis\">8 cores</td>
-                            <td class=\"text-ellipsis\">8 cores</td>
+                            <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\">4 cores</td>
+                            <td class=\"text-ellipsis\">4 cores</td>
                         </tr>
                         <tr>
                             <td class=\"text-ellipsis\">Price per hour</td>
-                            <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\">$ 1.22 /hr</td>
-                            <td class=\"text-ellipsis\">$ 0.30 /hr</td>
-                            <td class=\"text-ellipsis\">$ 0.68 /hr</td>
-                            <td class=\"text-ellipsis\">$ 0.71 /hr</td>
+                            <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\">$ 0.27 /hr</td>
+                            <td class=\"text-ellipsis\">$ 0.15 /hr</td>
                         </tr>
                         <tr>
                             <td>Type</td>
-                            <td style=\"color:var(--neutral-120)\">General purpose</td>
+                            <td style=\"color:var(--neutral-120)\">Compute optimized</td>
                             <td>Storage optimized</td>
-                            <td>General purpose</td>
-                            <td>General purpose</td>
                         </tr>
                         <tr>
                             <td class=\"text-ellipsis\">Potential savings per run</td>
                             <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\"></td>
-                            <td class=\"text-ellipsis\">$ 0.5429 (15.00 %)</td>
-                            <td class=\"text-ellipsis\">$ 0.3185 (8.80 %)</td>
-                            <td class=\"text-ellipsis\">$ 0.2968 (8.19 %)</td>
+                            <td class=\"text-ellipsis\">$ 0.0401 (14.84 %)</td>
                         </tr>
                     </tbody>
                 </table>
@@ -691,56 +674,46 @@ Resources for Job `fraud-ml` are currently over-provisioned. Currently, the driv
         <div class=\"v2 unravel-table-container compact-table p-0\">
             <div class=\"table-title\">
                 <h5>Worker node recommendations</h5>
-                <div class=\"mt-2\" style=\"color:var(--neutral-120)\">Based on data from 2024-05-01 07:45:45 UTC to 2024-05-11 07:45:45 UTC.</div>
+                <div class=\"mt-2\" style=\"color:var(--neutral-120)\">Based on data from 2024-05-14 05:56:35 UTC to 2024-05-24 05:56:35 UTC.</div>
             </div>
             <table>
                 <thead>
                     <tr>
                         <th class=\"text-left text-ellipsis\"></th>
                         <th class=\"text-left text-ellipsis\">Current instance</th>
-                        <th class=\"text-left text-ellipsis\">
-                            Option 1  
-                            <span style=\"background-color:#486AE3;color:var(--neutral-10);padding:4px;border-radius:4px;font-weight:normal;font-size:10px\">Max savings</span>
-                        </th>
-                        <th class=\"text-left text-ellipsis\">Option 2</th>
+                        <th class=\"text-left text-ellipsis\">Recommended Instance</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td class=\"text-ellipsis\">Compute</td>
-                        <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\">Standard_D16s_v3</td>
-                        <td class=\"text-ellipsis\">Standard_L16s</td>
-                        <td class=\"text-ellipsis\">Standard_L32s</td>
+                        <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\">Standard_F4</td>
+                        <td class=\"text-ellipsis\">Standard_L4s</td>
                     </tr>
                     <tr>
                         <td class=\"text-ellipsis\">Memory</td>
-                        <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\">64.0 GiB</td>
-                        <td class=\"text-ellipsis\">128 GiB</td>
-                        <td class=\"text-ellipsis\">256 GiB</td>
+                        <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\">8.0 GiB</td>
+                        <td class=\"text-ellipsis\">32 GiB</td>
                     </tr>
                     <tr>
                         <td class=\"text-ellipsis\">Cores</td>
-                        <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\">16 cores</td>
-                        <td class=\"text-ellipsis\">16 cores</td>
-                        <td class=\"text-ellipsis\">32 cores</td>
+                        <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\">4 cores</td>
+                        <td class=\"text-ellipsis\">4 cores</td>
                     </tr>
                     <tr>
                         <td class=\"text-ellipsis\">Price per hour</td>
-                        <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\">$ 1.22 /hr</td>
-                        <td class=\"text-ellipsis\">$ 0.60 /hr</td>
-                        <td class=\"text-ellipsis\">$ 1.20 /hr</td>
+                        <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\">$ 0.27 /hr</td>
+                        <td class=\"text-ellipsis\">$ 0.15 /hr</td>
                     </tr>
                     <tr>
                         <td>Type</td>
-                        <td style=\"color:var(--neutral-120)\">General purpose</td>
-                        <td>Storage optimized</td>
+                        <td style=\"color:var(--neutral-120)\">Compute optimized</td>
                         <td>Storage optimized</td>
                     </tr>
                     <tr>
                         <td class=\"text-ellipsis\">Potential savings per run</td>
                         <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\"></td>
-                        <td class=\"text-ellipsis\">$ 1.4477 (40.00 %)</td>
-                        <td class=\"text-ellipsis\">$ 0.0290 (0.80 %)</td>
+                        <td class=\"text-ellipsis\">$ 0.0803 (29.69 %)</td>
                     </tr>
                 </tbody>
             </table>
