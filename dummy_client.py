@@ -609,7 +609,7 @@ def main():
             "Authorization": f"Bearer {access_token}",
             "Accept": "application/vnd.github.v3+json",
         }
-        payload = {"body": "{}".format(mk_list[0)}
+        payload = {"body": "{}".format(mk_list[0])}
         response = requests.post(url, headers=headers, json=payload)
         response.raise_for_status()
 
