@@ -163,19 +163,6 @@ def get_organization_connection(organization_url, personal_access_token):
     return connection
 
 
-# %%
-def create_comments_with_markdown(mk_list):
-    for mk in mk_list:
-        comments = ""
-        comments += "----\n"
-        comments += "<details>\n"
-        # comments += "<img src='https://www.unraveldata.com/wp-content/themes/unravel-child/src/images/unLogo.svg' alt='Logo'>\n\n"
-        comments += "<summary> <img src='https://www.unraveldata.com/wp-content/themes/unravel-child/src/images/unLogo.svg' alt='Logo'> <b>Code Inefficiency (<Z%> faster)/b></summary>\n\n"
-        comments += "----\n"
-        comments += mk
-    return comments
-
-
 def fetch_app_summary(unravel_url, unravel_token, clusterUId, appId):
     app_summary_map_for_git_comment = {}
     app_summary_map_for_jira_comments = {}
@@ -563,6 +550,20 @@ def create_es_document(gsp, cluster_name, cluster_uid, job):
     document['actions'] = "null"
     document['job'] = job
     return document
+
+
+
+def create_comments_with_markdown(mk_list):
+    comments = ""
+    for mk in mk_list:
+        comments += "----\n"
+        comments += "<details>\n"
+        comments += "<summary> <img src='https://www.unraveldata.com/wp-content/themes/unravel-child/src/images/unLogo.svg' alt='Logo'> <b>Code Inefficiency (<Z%> faster)</b></summary>\n\n"
+        comments += "----\n"
+        comments += mk
+        comments += "\n----\n"
+        comments += "</details>\n"
+    return comments
 
 
 # %%
