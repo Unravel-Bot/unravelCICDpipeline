@@ -557,7 +557,7 @@ def create_comments_with_markdown(mk_list):
     for mk in mk_list:
         comments += "\n----\n"
         comments += "<details>\n"
-        comments += "<summary> <h2><b>{}</b></h2></summary>\n\n".format(mk['key']
+        comments += "<summary> <h2><b>{}</b></h2></summary>\n\n".format(mk['key'])
         comments += "\n"
         comments += mk['mk']
         comments += "\n"
