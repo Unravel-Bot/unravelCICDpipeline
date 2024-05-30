@@ -560,7 +560,8 @@ def create_comments_with_markdown(mk_list):
         comments += "<summary> <h2><b>Code Inefficiency (<Z%> faster)</b></h2></summary>\n\n"
         comments += "\n"
         comments += mk
-        comments += "</details>"
+        comments += "\n"
+        comments += "</details>\n\n"
     return comments
 
 
