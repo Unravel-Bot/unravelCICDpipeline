@@ -569,9 +569,7 @@ def create_comments_with_markdown(mk_list):
 # %%
 def main():
     mk_list = []
-    mk_list.append({"key":"Code Inefficiency", "mk":'''## Category: Code Inefficiency
-
-### Insight: Inefficient Join Condition
+    mk_list.append({"key":"Category: Code Inefficiency", "mk":'''### Insight: Inefficient Join Condition
 
 **Problem:**
 
@@ -602,7 +600,7 @@ Consider altering the join key to ensure even distribution of data using the sal
 val modifiedKeyForData = origDataSkew.map { case (key, value) => (key + scala.util.Random.nextInt(currentPartitions), value) }
 val dataSkewFixed = modifiedKeyForData.partitionBy(currentPartitions)
 ```
-'''}
+'''})
 
     mk_list.append({"key":"Category: Over-Provisioning", "mk":'''### Insight: Node Resizing for Jobs Compute
 
