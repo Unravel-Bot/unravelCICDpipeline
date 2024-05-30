@@ -600,7 +600,7 @@ Consider altering the join key to ensure even distribution of data using the sal
 
 ```scala
 val modifiedKeyForData = origDataSkew.map { case (key, value) => (key + scala.util.Random.nextInt(currentPartitions), value) }
-val dataSkewFixed = modifiedKeyForData.partitionBy(currentPartitions)
+val dataSkewFixed = modifiedKeyForData.partitionBy(currentPartitions)```
 ''')
 
     mk_list.append('''## Category: Over-Provisioning
