@@ -552,16 +552,15 @@ def create_es_document(gsp, cluster_name, cluster_uid, job):
     return document
 
 
-def create_comments_with_markdown(mk_list):
+def create_comments_with_markdown(mk):
     comments = ""
-    for mk in mk_list:
-        comments += "----\n"
-        comments += "<details>\n"
-        comments += "<summary> <h2><b>Code Inefficiency (<Z%> faster)</b></h2></summary>\n\n"
-        comments += "\n"
-        comments += mk
-        comments += "\n"
-        comments += "</details>\n\n"
+    comments += "----\n"
+    comments += "<details>\n"
+    comments += "<summary> <h2><b>Code Inefficiency (<Z%> faster)</b></h2></summary>\n\n"
+    comments += "\n"
+    comments += mk
+    comments += "\n"
+    comments += "</details>\n\n"
     return comments
 
 
@@ -744,17 +743,18 @@ val dataSkewFixed = modifiedKeyForData.partitionBy(currentPartitions)''')
 
     if True:
         # unravel_comments = re.sub(cleanRe, '', json.dumps(job_run_result_list, indent=4))
-        unravel_comments = create_comments_with_markdown(mk_list)
-
-        url = f"https://api.github.com/repos/{repo_name}/issues/{pr_number}/comments"
-
-        headers = {
-            "Authorization": f"Bearer {access_token}",
-            "Accept": "application/vnd.github.v3+json",
-        }
-        payload = {"body": "{}".format(unravel_comments)}
-        response = requests.post(url, headers=headers, json=payload)
-        response.raise_for_status()
+        for mk in mk_list:
+            unravel_comments = create_comments_with_markdown(mk)
+    
+            url = f"https://api.github.com/repos/{repo_name}/issues/{pr_number}/comments"
+    
+            headers = {
+                "Authorization": f"Bearer {access_token}",
+                "Accept": "application/vnd.github.v3+json",
+            }
+            payload = {"body": "{}".format(unravel_comments)}
+            response = requests.post(url, headers=headers, json=payload)
+            response.raise_for_status()
 
     else:
         print("Nothing to do without Unravel integration")
