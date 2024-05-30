@@ -557,7 +557,7 @@ def create_comments_with_markdown(mk_list):
     for mk in mk_list:
         comments += "----\n"
         comments += "<details>\n"
-        comments += "<summary> <img src='https://www.unraveldata.com/wp-content/themes/unravel-child/src/images/unLogo.svg' alt='Logo'> <b>Code Inefficiency (<Z%> faster)</b></summary>\n\n"
+        comments += "<summary> <h2><b>Code Inefficiency (<Z%> faster)</b></h2></summary>\n\n"
         comments += "\n"
         comments += mk
         comments += "</details>"
