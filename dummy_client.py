@@ -569,7 +569,7 @@ def create_comments_with_markdown(mk_list):
 # %%
 def main():
     mk_list = []
-    mk_list.append({"key":"Category: Code Inefficiency", "mk":'''## Insight: Inefficient Join Condition
+    mk_list.append({"key":"Code Inefficiency", "mk":'''## Insight: Inefficient Join Condition
 
 ### Problem:
 Operator(s) `SortMergeJoin` of Job `fraud-ml` Stage 22 have an inefficient join condition `pf_id#933 = pf_id#935`. The total joined rows exceed the maximum number of rows from either of the left and right join tables by a factor of 300x. This suggests that the join keys may have low cardinality. It typically happens due to uneven key distributions or changes in data characteristics in dynamic workloads.
@@ -595,7 +595,7 @@ val dataSkewFixed = modifiedKeyForData.partitionBy(currentPartitions)
 ```
 '''})
 
-    mk_list.append({"key":"Category: Over-Provisioning", "mk":'''## Insight: Node Resizing for Jobs Compute
+    mk_list.append({"key":"Over-Provisioning", "mk":'''## Insight: Node Resizing for Jobs Compute
 
 ### Problem:
 Resources for Job `fraud-ml` are currently over-provisioned. Currently, the driver and worker instance types are `Standard_F4` and `Standard_F4` respectively, resulting in a $35 cost for the job for the past 10 days. It is recommended to change the driver node to `Standard_L4s` and the worker node to `Standard_L4s` respectively to maximize cost savings.
@@ -722,7 +722,7 @@ Resources for Job `fraud-ml` are currently over-provisioned. Currently, the driv
 </div>
 </div>'''})
 
-    mk_list.append({"key":"Category: Failure", "mk":'''## Insight: Driver Error Due to OOM
+    mk_list.append({"key":"Failure", "mk":'''## Insight: Driver Error Due to OOM
 
 ### Problem:
 Driver for Job `fraud-ml` has failed due to an out of memory (OOM) issue. This was a result of low memory configuration. The provisioned memory for `instance_d` driver node type is 8GB and due to data variance; the min memory usage in the last 15 days was 6GB and max usage was 13GB.
