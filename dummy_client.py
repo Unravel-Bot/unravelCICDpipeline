@@ -741,6 +741,30 @@ Driver for Job `fraud-ml` has failed due to an out of memory (OOM) issue. This w
 In client mode, this config must not be set through the `SparkConf` directly in your application, because the driver JVM has already started at that point. Instead, please set this through the `--driver-memory` command line option or in your default properties file. 
 
 Reference: [Spark Configuration](https://spark.apache.org/docs/latest/configuration.html)'''})
+
+    mk_list.append({"key" :"Code Insight", "mk":'''### Insight: Contended Driver
+
+**Driver contention detected** with the driver time making up **88% of total execution time**.
+
+### Impact
+
+This problem has affected **16/137 (9%) runs** in the past 15 days. This has resulted in **8 hours of wasted execution time** and **$163 wasted cost** last month.
+
+### Remediation
+
+```python
+49     dfo=foldername.split("_")
+50     df=spark.read.format('csv').option('delimiter',"|").schema(dfSchema).load(mountPoint+SourcePath+"/"+foldername+".TXT")
+51     #df.show()
+52     df1=df.toPandas()
+```
+
+To avoid moving all the data to the driver and converting the Spark DataFrame to a Pandas DataFrame using `toPandas()`, you should use the following statement instead:
+
+```python
+df.withColumn("new_column", lit("<constant_value>"))
+```
+'''
     
 
     if True:
