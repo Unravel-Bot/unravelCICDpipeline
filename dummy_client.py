@@ -764,7 +764,7 @@ To avoid moving all the data to the driver and converting the Spark DataFrame to
 ```python
 df.withColumn("new_column", lit("<constant_value>"))
 ```
-    '''"})
+    '''})
     
 
     if True:
