@@ -781,6 +781,24 @@ df.withColumn("new_column", lit("<constant_value>"))
         response = requests.post(url, headers=headers, json=payload)
         response.raise_for_status()
 
+        channel = "#cicd-notifications"
+        # Replace with your Markdown-formatted message
+        message = "Unravel has insights for the pr number {} which was raised to merge {} from {} to {}. Click this link for further details {}".format(
+            pr_number, pr_commit_id, pr_base_branch, pr_target_branch, pr_url
+        )
+        # Format the user IDs with '@' symbol
+        user_ids = get_pr_reviewers_list()
+        formatted_user_ids = ["@" + user_id for user_id in user_ids]
+
+        # Create the message text with user mentions
+        message_with_mentions = message + " " + " ".join(formatted_user_ids)
+
+        try:
+            send_markdown_to_slack(channel, message_with_mentions)
+            notification_sent = True
+        except:
+            notification_sent = False
+
     else:
         print("Nothing to do without Unravel integration")
         sys.exit(0)
