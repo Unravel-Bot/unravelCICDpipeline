@@ -587,8 +587,8 @@ def main():
 
     response = requests.request("POST", url, headers=headers, data=payload)
 
-    for insight in response.json().items():
-        mk_list.append({"key":insight.key(), "mk": base64.b64decode(insight.value())})
+    for key, value in response.json().items():
+        mk_list.append({"key":key, "mk": base64.b64decode(value)})
 
     if True:
         # unravel_comments = re.sub(cleanRe, '', json.dumps(job_run_result_list, indent=4))
