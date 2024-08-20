@@ -611,7 +611,7 @@ def approve_pr():
 
 def approve_review_comment():
     # API URL to get review comments for the PR
-    url = f'https://api.github.com/repos/{repo_name}/pulls/{pr_number}/comments'
+    comments_url = f'https://api.github.com/repos/{repo_name}/pulls/{pr_number}/comments'
     
     # Request headers
     headers = {
@@ -621,28 +621,35 @@ def approve_review_comment():
     }
     
     # Fetch all review comments for the PR
-    response = requests.get(url, headers=headers)
+    response = requests.get(comments_url, headers=headers)
     
     if response.status_code == 200:
         comments = response.json()
         if comments:
+            # Create a review with a "COMMENTED" state to resolve the conversation
+            review_url = f'https://api.github.com/repos/{repo_name}/pulls/{pr_number}/reviews'
+    
+            data = {
+                "body": "All comments have been addressed and the conversations are resolved.",
+                "event": "COMMENTED",
+                "comments": []
+            }
+    
             for comment in comments:
-                comment_id = comment['id']
-                update_url = f'https://api.github.com/repos/{repo_name}/pulls/comments/{comment_id}'
+                data["comments"].append({
+                    "path": comment["path"],
+                    "position": comment["position"],
+                    "body": "Resolved."
+                })
     
-                # Data for updating the comment
-                data = {
-                    'body': "This issue has been resolved. The suggestion has been implemented."
-                }
+            # Send POST request to create the review
+            review_response = requests.post(review_url, headers=headers, data=json.dumps(data))
     
-                # Send PATCH request to update the comment
-                update_response = requests.patch(update_url, headers=headers, data=json.dumps(data))
-    
-                if update_response.status_code == 200:
-                    print(f"Comment {comment_id} updated successfully.")
-                else:
-                    print(f"Failed to update comment {comment_id}. Status code: {update_response.status_code}")
-                    print(update_response.json())
+            if review_response.status_code == 200:
+                print("Review submitted successfully to resolve conversations.")
+            else:
+                print(f"Failed to submit review. Status code: {review_response.status_code}")
+                print(review_response.json())
         else:
             print("No comments found.")
     else:
@@ -652,6 +659,15 @@ def approve_review_comment():
 
 # %%
 def main():
+    raw_description = get_pr_description()
+    es_document_list = []
+    if not raw_description:
+        print("Nothing to do without description, skipping!!")
+        sys.exit(0)
+    description = " ".join(raw_description.splitlines())
+    description = re.sub(cleanRe, "", description)
+    job_run_list = get_job_runs_from_description_as_text(pr_number, description)
+    
     mk_list = []
     import requests
     import json
@@ -659,7 +675,7 @@ def main():
     url = "http://44.207.116.9:5001/api/v1/cicd"
 
     payload = json.dumps({
-    "session": "0724-231054-j6y8msjz/app-20240724231513-0000",
+    "session": job_run_list,
     "pr_number": pr_number
     })
     headers = {
@@ -687,8 +703,13 @@ def main():
                     'X-GitHub-Api-Version': '2022-11-28'
                 }
                 print(perform_code_review(get_file_name_flag=True))
+                body_text = '''
+                ```python
+                # Replace toPandas() with Spark distributed DataFrames using pandas_api() to avoid collecting all data at the driver.
+                pandas_df = PandasOnSparkDF(df1)
+                '''
                 data = {
-                    'body': "Replace toPandas() with Spark distributed DataFrames using pandas_api() to avoid collecting all data at the driver. \n pandas_df = PandasOnSparkDF(df1)",
+                    'body':body_text
                     'path': perform_code_review(get_file_name_flag=True)[0],
                     'commit_id': pr_commit_id,
                     'line': 36
