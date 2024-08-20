@@ -609,6 +609,32 @@ def approve_pr():
         print('Failed to approve pull request:', response.json())
 
 
+def approve_review_comment():
+    url = f'https://api.github.com/repos/{repo_name}/pulls/comments/{comment_id}'
+
+    # Request headers
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Accept': 'application/vnd.github.v3+json',
+        'X-GitHub-Api-Version': '2022-11-28'
+    }
+    
+    # Data for updating the comment
+    data = {
+        'body': "This issue has been resolved. The suggestion has been implemented."
+    }
+    
+    # Send PATCH request to update the comment
+    response = requests.patch(url, headers=headers, data=json.dumps(data))
+    
+    # Check the response status
+    if response.status_code == 200:
+        print("Comment updated successfully.")
+    else:
+        print(f"Failed to update comment. Status code: {response.status_code}")
+        print(response.json())
+
+
 # %%
 def main():
     mk_list = []
@@ -628,6 +654,7 @@ def main():
     response = requests.request("POST", url, headers=headers, data=payload)
 
     if "code_lines" not in response.json().keys():
+        approve_review_comment()
         approve_pr()
         sys.exit(0)
     else:
