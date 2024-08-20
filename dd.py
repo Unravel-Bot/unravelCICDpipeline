@@ -34,6 +34,7 @@ def main(args):
 
     df1.show()
     pandas_df = df1.toPandas()
+    
     rows_count = pandas_df.shape()[0]
 
 if __name__ == "__main__":
