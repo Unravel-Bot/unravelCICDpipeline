@@ -590,6 +590,16 @@ def main():
     for key, value in response.json().items():
         if key != "code_lines":
             mk_list.append({"key":key, "mk": base64.b64decode(value).decode('utf-8')})
+        else:
+            data = {
+                'body': "Replace toPandas() with Spark distributed DataFrames using pandas_api() to avoid collecting all data at the driver. \n pandas_df = PandasOnSparkDF(df1)"
+                'path': perform_code_review(get_file_name_flag=True)[0],
+                'commit_id': pr_commit_id,
+                'line': 36
+            }
+
+            # Send POST request
+            response = requests.post(url, headers=headers, data=json.dumps(data))
 
     if True:
         # unravel_comments = re.sub(cleanRe, '', json.dumps(job_run_result_list, indent=4))
