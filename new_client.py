@@ -659,6 +659,15 @@ def approve_review_comment():
 
 # %%
 def main():
+    raw_description = get_pr_description()
+    es_document_list = []
+    if not raw_description:
+        print("Nothing to do without description, skipping!!")
+        sys.exit(0)
+    description = " ".join(raw_description.splitlines())
+    description = re.sub(cleanRe, "", description)
+    job_run_list = get_job_runs_from_description_as_text(pr_number, description)
+    
     mk_list = []
     import requests
     import json
@@ -666,7 +675,7 @@ def main():
     url = "http://44.207.116.9:5001/api/v1/cicd"
 
     payload = json.dumps({
-    "session": "0724-231054-j6y8msjz/app-20240724231513-0000",
+    "session": job_run_list,
     "pr_number": pr_number
     })
     headers = {
