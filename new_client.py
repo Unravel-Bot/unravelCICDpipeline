@@ -695,28 +695,30 @@ def main():
                 mk_list.append({"key":key, "mk": base64.b64decode(value).decode('utf-8')})
             else:
                 url = f'https://api.github.com/repos/{repo_name}/pulls/{pr_number}/comments'
-    
+
                 # Request headers
                 headers = {
                     'Authorization': f'Bearer {access_token}',
                     'Accept': 'application/vnd.github.v3+json',
                     'X-GitHub-Api-Version': '2022-11-28'
                 }
+                
                 print(perform_code_review(get_file_name_flag=True))
+                
+                # Properly formatted markdown with triple backticks
                 body_text = '''
                 ```python
                 # Replace toPandas() with Spark distributed DataFrames using pandas_api() to avoid collecting all data at the driver.
                 pandas_df = PandasOnSparkDF(df1)
+                ```
                 '''
+                
                 data = {
-                    'body':body_text
-                    'path': perform_code_review(get_file_name_flag=True)[0],
-                    'commit_id': pr_commit_id,
-                    'line': 36
+                'body': body_text,
+                'path': perform_code_review(get_file_name_flag=True)[0],
+                'commit_id': pr_commit_id,
+                'line': 36
                 }
-    
-                # Send POST request
-                response = requests.post(url, headers=headers, data=json.dumps(data))
 
     if True:
         # unravel_comments = re.sub(cleanRe, '', json.dumps(job_run_result_list, indent=4))
