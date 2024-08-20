@@ -592,7 +592,7 @@ def main():
             mk_list.append({"key":key, "mk": base64.b64decode(value).decode('utf-8')})
         else:
             data = {
-                'body': "Replace toPandas() with Spark distributed DataFrames using pandas_api() to avoid collecting all data at the driver. \n pandas_df = PandasOnSparkDF(df1)"
+                'body': "Replace toPandas() with Spark distributed DataFrames using pandas_api() to avoid collecting all data at the driver. \n pandas_df = PandasOnSparkDF(df1)",
                 'path': perform_code_review(get_file_name_flag=True)[0],
                 'commit_id': pr_commit_id,
                 'line': 36
