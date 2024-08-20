@@ -599,6 +599,7 @@ def main():
                 'Accept': 'application/vnd.github.v3+json',
                 'X-GitHub-Api-Version': '2022-11-28'
             }
+            print(perform_code_review(get_file_name_flag=True))
             data = {
                 'body': "Replace toPandas() with Spark distributed DataFrames using pandas_api() to avoid collecting all data at the driver. \n pandas_df = PandasOnSparkDF(df1)",
                 'path': perform_code_review(get_file_name_flag=True)[0],
