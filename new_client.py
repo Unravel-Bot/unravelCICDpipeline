@@ -707,10 +707,10 @@ def main():
                 
                 # Properly formatted markdown with triple backticks
                 body_text = '''
-                ```python
-                # Replace toPandas() with Spark distributed DataFrames using pandas_api() to avoid collecting all data at the driver.
-                pandas_df = PandasOnSparkDF(df1)
-                ```
+```python
+# Replace toPandas() with Spark distributed DataFrames using pandas_api() to avoid collecting all data at the driver.
+pandas_df = PandasOnSparkDF(df1)
+```
                 '''
                 
                 data = {
