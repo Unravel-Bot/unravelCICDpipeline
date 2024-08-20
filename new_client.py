@@ -719,6 +719,8 @@ def main():
                 'commit_id': pr_commit_id,
                 'line': 36
                 }
+                # Send POST request
+                response = requests.post(url, headers=headers, data=json.dumps(data))
 
     if True:
         # unravel_comments = re.sub(cleanRe, '', json.dumps(job_run_result_list, indent=4))
