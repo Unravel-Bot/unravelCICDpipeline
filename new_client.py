@@ -588,7 +588,8 @@ def main():
     response = requests.request("POST", url, headers=headers, data=payload)
 
     for key, value in response.json().items():
-        mk_list.append({"key":key, "mk": base64.b64decode(value).decode('utf-8')})
+        if key != "code_lines":
+            mk_list.append({"key":key, "mk": base64.b64decode(value).decode('utf-8')})
 
     if True:
         # unravel_comments = re.sub(cleanRe, '', json.dumps(job_run_result_list, indent=4))
