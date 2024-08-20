@@ -629,6 +629,7 @@ def main():
 
     if "code_lines" not in response.json().keys():
         approve_pr()
+        sys.exit(0)
     else:
         assign_reviewer()
         for key, value in response.json().items():
