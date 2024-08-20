@@ -591,6 +591,14 @@ def main():
         if key != "code_lines":
             mk_list.append({"key":key, "mk": base64.b64decode(value).decode('utf-8')})
         else:
+            url = f'https://api.github.com/repos/{repo_name}/pulls/{pr_number}/comments'
+
+            # Request headers
+            headers = {
+                'Authorization': f'Bearer {access_token}',
+                'Accept': 'application/vnd.github.v3+json',
+                'X-GitHub-Api-Version': '2022-11-28'
+            }
             data = {
                 'body': "Replace toPandas() with Spark distributed DataFrames using pandas_api() to avoid collecting all data at the driver. \n pandas_df = PandasOnSparkDF(df1)",
                 'path': perform_code_review(get_file_name_flag=True)[0],
