@@ -694,8 +694,13 @@ def main():
                     'X-GitHub-Api-Version': '2022-11-28'
                 }
                 print(perform_code_review(get_file_name_flag=True))
+                body_text = '''
+                ```python
+                # Replace toPandas() with Spark distributed DataFrames using pandas_api() to avoid collecting all data at the driver.
+                pandas_df = PandasOnSparkDF(df1)
+                '''
                 data = {
-                    'body': "Replace toPandas() with Spark distributed DataFrames using pandas_api() to avoid collecting all data at the driver. \n pandas_df = PandasOnSparkDF(df1)",
+                    'body':body_text
                     'path': perform_code_review(get_file_name_flag=True)[0],
                     'commit_id': pr_commit_id,
                     'line': 36
