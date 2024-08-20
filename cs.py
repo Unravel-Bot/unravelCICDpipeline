@@ -33,8 +33,7 @@ def main(args):
     df1.rdd.foreachPartition(process_partition)
 
     df1.show()
-    pandas_df = df1.toPandas()
-    total_sum = pandas_df['value'].sum()
+    pandas_df = PandasOnSparkDF(df1)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
