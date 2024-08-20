@@ -611,7 +611,7 @@ def approve_pr():
 
 def approve_review_comment():
     # API URL to get review comments for the PR
-    url = f'https://api.github.com/repos/{repo_name}/pulls/{pr_number}/comments'
+    comments_url = f'https://api.github.com/repos/{repo_name}/pulls/{pr_number}/comments'
     
     # Request headers
     headers = {
@@ -621,28 +621,35 @@ def approve_review_comment():
     }
     
     # Fetch all review comments for the PR
-    response = requests.get(url, headers=headers)
+    response = requests.get(comments_url, headers=headers)
     
     if response.status_code == 200:
         comments = response.json()
         if comments:
+            # Create a review with a "COMMENTED" state to resolve the conversation
+            review_url = f'https://api.github.com/repos/{repo_name}/pulls/{pr_number}/reviews'
+    
+            data = {
+                "body": "All comments have been addressed and the conversations are resolved.",
+                "event": "COMMENTED",
+                "comments": []
+            }
+    
             for comment in comments:
-                comment_id = comment['id']
-                update_url = f'https://api.github.com/repos/{repo_name}/pulls/comments/{comment_id}'
+                data["comments"].append({
+                    "path": comment["path"],
+                    "position": comment["position"],
+                    "body": "Resolved."
+                })
     
-                # Data for updating the comment
-                data = {
-                    'body': "This issue has been resolved. The suggestion has been implemented."
-                }
+            # Send POST request to create the review
+            review_response = requests.post(review_url, headers=headers, data=json.dumps(data))
     
-                # Send PATCH request to update the comment
-                update_response = requests.patch(update_url, headers=headers, data=json.dumps(data))
-    
-                if update_response.status_code == 200:
-                    print(f"Comment {comment_id} updated successfully.")
-                else:
-                    print(f"Failed to update comment {comment_id}. Status code: {update_response.status_code}")
-                    print(update_response.json())
+            if review_response.status_code == 200:
+                print("Review submitted successfully to resolve conversations.")
+            else:
+                print(f"Failed to submit review. Status code: {review_response.status_code}")
+                print(review_response.json())
         else:
             print("No comments found.")
     else:
