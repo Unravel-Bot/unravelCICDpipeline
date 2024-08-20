@@ -709,7 +709,7 @@ def main():
                 pandas_df = PandasOnSparkDF(df1)
                 '''
                 data = {
-                    'body':body_text
+                    'body':body_text,
                     'path': perform_code_review(get_file_name_flag=True)[0],
                     'commit_id': pr_commit_id,
                     'line': 36
