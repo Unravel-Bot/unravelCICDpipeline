@@ -633,23 +633,24 @@ def approve_review_comment():
         comments = response.json()
         if comments:
             for comment in comments:
-                comment_id = comment['id']
-                print(comment)
-                update_url = f'https://api.github.com/repos/{repo_name}/pulls/comments/{comment_id}'
-    
-                # Data for updating the comment
-                data = {
-                    'body': "This issue has been resolved. The suggestion has been implemented. ✅"
-                }
-    
-                # Send PATCH request to update the comment
-                update_response = requests.patch(update_url, headers=headers, data=json.dumps(data))
-    
-                if update_response.status_code == 200:
-                    print(f"Comment {comment_id} updated successfully.")
-                else:
-                    print(f"Failed to update comment {comment_id}. Status code: {update_response.status_code}")
-                    print(update_response.json())
+                if comment['original_line'] == 36:
+                    comment_id = comment['id']
+                    print(comment)
+                    update_url = f'https://api.github.com/repos/{repo_name}/pulls/comments/{comment_id}'
+        
+                    # Data for updating the comment
+                    data = {
+                        'body': "This issue has been resolved. The suggestion has been implemented. ✅"
+                    }
+        
+                    # Send PATCH request to update the comment
+                    update_response = requests.patch(update_url, headers=headers, data=json.dumps(data))
+        
+                    if update_response.status_code == 200:
+                        print(f"Comment {comment_id} updated successfully.")
+                    else:
+                        print(f"Failed to update comment {comment_id}. Status code: {update_response.status_code}")
+                        print(update_response.json())
         else:
             print("No comments found.")
     else:
