@@ -638,7 +638,7 @@ def approve_review_comment():
     
                 # Data for updating the comment
                 data = {
-                    'body': "This issue has been resolved. The suggestion has been implemented."
+                    'body': "This issue has been resolved. The suggestion has been implemented.✅"
                 }
     
                 # Send PATCH request to update the comment
