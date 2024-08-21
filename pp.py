@@ -1,40 +1,33 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import expr
-import sys
+from pyspark.pandas import DataFrame as PandasOnSparkDF
 import time
 
-INVALID_USAGE = """
-Please enter all command-line parameters!
+# Define the parameters
+numRows = 10000000000  # Set the number of rows you want to process
+numPartitions = 100 # Set the number of partitions
 
-<numRows> Number of rows to process
-<numPartitions> Number of partitions to process
-"""
+# Enabling Hive support to connect with the Hive metastore
+spark = SparkSession.builder.enableHiveSupport().getOrCreate()
 
-def main(args):
-    if len(args) < 2:
-        print(INVALID_USAGE)
-        sys.exit(-1)
+df = spark.range(0, numRows, 1, numPartitions).selectExpr("id", "(id % 100) as sym")
 
-    # Enabling Hive support to connect with the Hive metastore
-    spark = SparkSession.builder.enableHiveSupport().getOrCreate()
+df.createOrReplaceGlobalTempView("t1")
+df1 = spark.sql("SELECT COUNT(1), sym FROM global_temp.t1 GROUP BY sym")
 
-    numRows = int(args[0])
-    numPartitions = int(args[1])
+def process_partition(partition):
+    return partition
 
-    df = spark.range(0, numRows, 1, numPartitions).selectExpr("id", "(id % 100) as sym")
+df1.rdd.foreachPartition(process_partition)
 
-    df.createOrReplaceGlobalTempView("t1")
-    df1 = spark.sql("SELECT COUNT(1), sym FROM global_temp.t1 GROUP BY sym")
+df1.show()
 
-    def process_partition(partition):
-        time.sleep(3)
-        return partition
+# Convert to Pandas DataFrame
+# pandas_df = df1.toPandas()
+pandas_df = PandasOnSparkDF(df1)
 
-    df1.rdd.foreachPartition(process_partition)
+# Get the number of rows in the Pandas DataFrame
+rows_count = pandas_df.shape[0]
+print(f"Number of rows: {rows_count}")
 
-    df1.show()
-    pandas_df = df1.toPandas()
-    rows_count = pandas_df.shape()[0]
-
-if __name__ == "__main__":
-    main(sys.argv[1:])
+# time.sleep(40)
