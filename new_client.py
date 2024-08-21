@@ -742,6 +742,7 @@ def main():
                 response = requests.post(url, headers=headers, data=json.dumps(data))
 
     if True:
+        time.sleep(5)
         # unravel_comments = re.sub(cleanRe, '', json.dumps(job_run_result_list, indent=4))
         unravel_comments = create_comments_with_markdown(mk_list)
 
