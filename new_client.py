@@ -684,9 +684,11 @@ def main():
     response = requests.request("POST", url, headers=headers, data=payload)
 
     if "code_lines" not in response.json().keys():
+        for key, value in response.json().items():
+            if key != "code_lines":
+                mk_list.append({"key":key, "mk": base64.b64decode(value).decode('utf-8')})
         approve_review_comment()
         approve_pr()
-        sys.exit(0)
     else:
         assign_reviewer()
         for key, value in response.json().items():
