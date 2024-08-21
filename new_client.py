@@ -557,14 +557,18 @@ def create_es_document(gsp, cluster_name, cluster_uid, job):
 
 def create_comments_with_markdown(mk_list):
     comments = ""
+    comments += "\n----\n"
+    comment += mk['mk']
+    comments += "\n"
     for mk in mk_list:
-        comments += "\n----\n"
-        comments += "<details>\n"
-        comments += "<summary> <h2><b>{}</b></h2></summary>\n\n".format(mk['key'])
-        comments += "\n"
-        comments += mk['mk']
-        comments += "\n"
-        comments += "</details>\n\n"
+        if mk['key'] != "header':
+            comments += "\n----\n"
+            comments += "<details>\n"
+            comments += "<summary> <h2><b>{}</b></h2></summary>\n\n".format(mk['key'])
+            comments += "\n"
+            comments += mk['mk']
+            comments += "\n"
+            comments += "</details>\n\n"
     return comments
 
 def assign_reviewer():
