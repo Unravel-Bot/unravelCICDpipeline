@@ -694,7 +694,7 @@ def main():
     else:
         assign_reviewer()
         for key, value in response.json().items():
-            if key in ["header","Node rightsizing is needed"]:
+            if key in ["header","Cost Savings Insights"]:
                 mk_list.append({"key":key, "mk": base64.b64decode(value).decode('utf-8')})
             elif key == "Resource contention in Driver":
                 url = f'https://api.github.com/repos/{repo_name}/pulls/{pr_number}/comments'
