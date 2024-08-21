@@ -557,9 +557,11 @@ def create_es_document(gsp, cluster_name, cluster_uid, job):
 
 def create_comments_with_markdown(mk_list):
     comments = ""
-    comments += "\n----\n"
-    comments += mk['mk']
-    comments += "\n"
+    for mk in mk_list:
+        if mk['key'] == "header":
+            comments += "\n----\n"
+            comments += mk['mk']
+            comments += "\n"
     for mk in mk_list:
         if mk['key'] != "header":
             comments += "\n----\n"
