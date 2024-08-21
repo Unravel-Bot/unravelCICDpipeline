@@ -714,6 +714,21 @@ pandas_df = PandasOnSparkDF(df1)
                 }
                 # Send POST request
                 response = requests.post(url, headers=headers, data=json.dumps(data))
+                body_text = '''
+```python
+# Based on the analysis, below is the possible code line which is causing slow sql operator event.
+df1 = spark.sql("SELECT COUNT(1), sym FROM global_temp.t1 GROUP BY sym")
+```
+                '''
+                
+                data = {
+                'body': body_text,
+                'path': perform_code_review(get_file_name_flag=True)[0],
+                'commit_id': pr_commit_id,
+                'line': 27
+                }
+                # Send POST request
+                response = requests.post(url, headers=headers, data=json.dumps(data))
 
     if True:
         # unravel_comments = re.sub(cleanRe, '', json.dumps(job_run_result_list, indent=4))
