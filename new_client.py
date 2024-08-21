@@ -561,7 +561,7 @@ def create_comments_with_markdown(mk_list):
     comment += mk['mk']
     comments += "\n"
     for mk in mk_list:
-        if mk['key'] != "header':
+        if mk['key'] != "header":
             comments += "\n----\n"
             comments += "<details>\n"
             comments += "<summary> <h2><b>{}</b></h2></summary>\n\n".format(mk['key'])
