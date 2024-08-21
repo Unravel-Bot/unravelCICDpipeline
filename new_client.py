@@ -694,9 +694,9 @@ def main():
     else:
         assign_reviewer()
         for key, value in response.json().items():
-            if key != "code_lines":
+            if key in ["header","Node rightsizing is needed"]:
                 mk_list.append({"key":key, "mk": base64.b64decode(value).decode('utf-8')})
-            else:
+            elif key == "Resource contention in Driver":
                 url = f'https://api.github.com/repos/{repo_name}/pulls/{pr_number}/comments'
 
                 # Request headers
@@ -709,12 +709,7 @@ def main():
                 print(perform_code_review(get_file_name_flag=True))
                 
                 # Properly formatted markdown with triple backticks
-                body_text = '''
-```python
-# Replace toPandas() with Spark distributed DataFrames using pandas_api() to avoid collecting all data at the driver.
-pandas_df = PandasOnSparkDF(df1)
-```
-                '''
+                body_text = base64.b64decode(value).decode('utf-8')
                 
                 data = {
                 'body': body_text,
@@ -724,12 +719,18 @@ pandas_df = PandasOnSparkDF(df1)
                 }
                 # Send POST request
                 response = requests.post(url, headers=headers, data=json.dumps(data))
-                body_text = '''
-```python
-# Based on the analysis, below is the possible code line which is causing slow sql operator event.
-df1 = spark.sql("SELECT COUNT(1), sym FROM global_temp.t1 GROUP BY sym")
-```
-                '''
+            elif key == "Slow Sql Spark operator detected":
+                url = f'https://api.github.com/repos/{repo_name}/pulls/{pr_number}/comments'
+
+                # Request headers
+                headers = {
+                    'Authorization': f'Bearer {access_token}',
+                    'Accept': 'application/vnd.github.v3+json',
+                    'X-GitHub-Api-Version': '2022-11-28'
+                }
+                
+                print(perform_code_review(get_file_name_flag=True))
+                body_text = base64.b64decode(value).decode('utf-8')
                 
                 data = {
                 'body': body_text,
