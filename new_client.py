@@ -634,11 +634,12 @@ def approve_review_comment():
         if comments:
             for comment in comments:
                 comment_id = comment['id']
+                print(comment)
                 update_url = f'https://api.github.com/repos/{repo_name}/pulls/comments/{comment_id}'
     
                 # Data for updating the comment
                 data = {
-                    'body': "This issue has been resolved. The suggestion has been implemented."
+                    'body': "This issue has been resolved. The suggestion has been implemented. ✅"
                 }
     
                 # Send PATCH request to update the comment
