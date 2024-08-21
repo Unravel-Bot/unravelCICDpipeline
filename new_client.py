@@ -633,7 +633,7 @@ def approve_review_comment():
         comments = response.json()
         if comments:
             for comment in comments:
-                if comment['original_line'] == 36:
+                if comment['original_line'] == 47:
                     comment_id = comment['id']
                     print(comment)
                     update_url = f'https://api.github.com/repos/{repo_name}/pulls/comments/{comment_id}'
@@ -715,7 +715,7 @@ def main():
                 'body': body_text,
                 'path': perform_code_review(get_file_name_flag=True)[0],
                 'commit_id': pr_commit_id,
-                'line': 36
+                'line': 47
                 }
                 # Send POST request
                 response = requests.post(url, headers=headers, data=json.dumps(data))
