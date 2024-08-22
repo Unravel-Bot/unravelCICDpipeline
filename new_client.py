@@ -603,7 +603,7 @@ def approve_pr():
     }
     
     data = {
-        'body': 'Approving the PR after review.',
+        'body': 'Approving this PR as there are no further pending rewrites. Please take a look at other insights and consider their suggested resolutions to further optimize this job.',
         'event': 'APPROVE',
     }
     
