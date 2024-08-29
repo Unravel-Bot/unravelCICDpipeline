@@ -769,7 +769,7 @@ def main():
         message_with_mentions = message + " " + " ".join(formatted_user_ids)
 
         try:
-            # send_markdown_to_slack(channel, message_with_mentions)
+            send_markdown_to_slack(channel, message_with_mentions)
             notification_sent = True
         except:
             notification_sent = False
