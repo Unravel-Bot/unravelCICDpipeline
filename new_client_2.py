@@ -893,7 +893,6 @@ pandas_df = PandasOnSparkDF(df1)
         print(perform_code_review(get_file_name_flag=True))
         
         # Properly formatted markdown with triple backticks
-        body_text = base64.b64decode(value).decode('utf-8')
         
         data = {
         'body': body_text,
@@ -934,7 +933,6 @@ Remediation steps involve optimizing the number of partitions for scan or join o
         }
         
         print(perform_code_review(get_file_name_flag=True))
-        body_text = base64.b64decode(value).decode('utf-8')
         
         data = {
         'body': body_text,
@@ -973,7 +971,7 @@ Remediation steps involve optimizing the number of partitions for scan or join o
         message_with_mentions = message + " " + " ".join(formatted_user_ids)
 
         try:
-            send_markdown_to_slack(channel, message_with_mentions)
+            # send_markdown_to_slack(channel, message_with_mentions)
             notification_sent = True
         except:
             notification_sent = False
