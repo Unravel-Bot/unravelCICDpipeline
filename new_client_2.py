@@ -676,16 +676,52 @@ def main():
     else:
         assign_reviewer()
         value = """
-| Spark App            | Cluster               | Estimated Cost | Executor Node Type | Driver Node Type | Tags                                                                                                                                           | Autoscale               |
-|----------------------|-----------------------|----------------|--------------------|------------------|------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------|
-| app-20230607080928-0000 | 0607-080548-qf2z9hbu | $0.15          | Standard_DS3_v2    | Standard_DS3_v2  | {'Vendor': 'Databricks', 'Creator': 'ptholeti@unraveldata.com', 'ClusterName': 'job-263734785050587-run-2549400', 'ClusterId': '0607-080548-qf2z9hbu', 'JobId': '263734785050587', 'RunName': 'Multiple Jobs Stages Simulator'} | Autoscale is not enabled. |
+| Spark App               | Cluster              | Estimated Cost | Executor Node Type | Driver Node Type   | Tags                                                                                                                                                                                                                            | Autoscale                 |
+|-------------------------|----------------------|----------------|--------------------|--------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------|
+| app-20241205115301-0000 | 1205-114957-63lf6ph3 | $9.51          | Standard_D16ads_v5 | Standard_D16ads_v5 | {'Vendor': 'Databricks', 'Creator': 'ptholeti@unraveldata.com', 'ClusterName': 'job-263734785050587-run-2549400', 'ClusterId': '0607-080548-qf2z9hbu', 'JobId': '263734785050587', 'RunName': 'Multiple Jobs Stages Simulator'} | Autoscale is not enabled. |
 """
         mk_list.append({"key":"header", "mk": value})
         value = """
 ## Insight: Node Resizing for Jobs Compute
 
 ### Problem:
-Resources for Job `LightExecutorEvent_Automated` are currently over-provisioned. Currently, the driver and worker instance types are `Standard_DS3_v2` and `Standard_DS3_v2` respectively, resulting in a $1.28 cost for the job for the past 10 days. It is recommended to change the driver node to `Standard_L4s` and the worker node to `Standard_L4s` respectively to maximize cost savings.
+
+**Job:** `NodeRightSizeWithAutoScale_2`  
+**Workspace:** `dbx.v4796.playground.customer-demos.shwetha`  
+**Issue:** Contention with driver time comprising **61% of total execution time**, indicating possible inefficiencies in the code or bottlenecks on resources.  
+
+**Recent Run ID:** `20934596855561`
+
+---
+
+## Observations
+
+1. **Driver-Only Operations**  
+   - The majority of operations are performed on the driver (e.g., Python pandas processing).  
+   - Heavy operations on the driver lead to **underutilized executors**, impacting both **cost** and **performance**.  
+
+2. **Idle Cluster**  
+   - The cluster remains idle for extended periods, likely due to a **long auto-termination timeout**.  
+
+3. **External Dependency Delays**  
+   - Driver code is waiting for **slow responses from external services or infrastructure** (e.g., SQL database reads).  
+
+---
+
+## Potential Savings
+
+- **Monthly Savings:** $8.17  
+- **Annualized Savings:** $99.43  
+
+---
+
+## Next Steps
+
+To realize the savings, review the following **remediation** actions:
+
+- Optimize driver-based operations by delegating tasks to executors.  
+- Reduce auto-termination timeout to minimize idle cluster costs.  
+- Improve response times for external services or cache frequently accessed data.  
 
 ### Impact:
 - This problem has affected 43/137 (31%) runs.
@@ -693,193 +729,78 @@ Resources for Job `LightExecutorEvent_Automated` are currently over-provisioned.
 - Diagnosing this issue has saved $221 (22 hours) in troubleshooting efforts.
 
 ### Remediation:
+Go to the cluster configuration page for the job [**238605012616661**](https://adb-1635409050664771.11.azuredatabricks.net/?o=1635409050664771#job/238605012616661) and change the driver node to **Standard_L8s** and worker node to **Standard_D16ds_v4** respectively to maximize cost savings.    
+Ensure autoscaling is enabled, set min workers to **2** and max workers to **5**    
 
+&nbsp;     
+<!-- Add your HTML table here -->
+<div><div class="unravel-card shadow"><div class="v2 unravel-table-container compact-table p-0"><div class="table-title"><h5>Driver node recommendations</h5><div class="mt-2" style="color:var(--neutral-120)">Based on data from 2024-11-25 13:06:10 UTC to 2024-12-05 13:06:10 UTC.</div></div><table><thead><tr><th class="text-left text-ellipsis"></th><th class="text-left text-ellipsis">Current instance</th><th class="text-left text-ellipsis">Option 1  <span style="background-color:#486AE3;color:var(--neutral-10);padding:4px;border-radius:4px;font-weight:normal;font-size:10px">Max savings  </span></th><th class="text-left text-ellipsis">Option 2</th><th class="text-left text-ellipsis">Option 3</th></tr></thead><tbody><tr><td class="text-ellipsis">Compute</td><td class="text-ellipsis" style="color:var(--neutral-120)">Standard_D16ads_v5</td><td class="text-ellipsis">Standard_L8s</td><td class="text-ellipsis">Standard_D8d_v4</td><td class="text-ellipsis">Standard_D8ads_v5</td></tr><tr><td class="text-ellipsis">Memory</td><td class="text-ellipsis" style="color:var(--neutral-120)">64 GiB</td><td class="text-ellipsis">64 GiB</td><td class="text-ellipsis">32 GiB</td><td class="text-ellipsis">32 GiB</td></tr><tr><td class="text-ellipsis">Cores</td><td class="text-ellipsis" style="color:var(--neutral-120)">16 cores</td><td class="text-ellipsis">8 cores</td><td class="text-ellipsis">8 cores</td><td class="text-ellipsis">8 cores</td></tr><tr><td class="text-ellipsis">Price per hour</td><td class="text-ellipsis" style="color:var(--neutral-120)">$ 1.42 /hr</td><td class="text-ellipsis">$ 0.30 /hr</td><td class="text-ellipsis">$ 0.68 /hr</td><td class="text-ellipsis">$ 0.71 /hr</td></tr><tr><td>Type</td><td style="color:var(--neutral-120)">General purpose</td><td>Storage optimized</td><td>General purpose</td><td>General purpose</td></tr><tr><td class="text-ellipsis">Potential savings per run</td><td class="text-ellipsis" style="color:var(--neutral-120)"></td><td class="text-ellipsis">$ 1.1868 (12.48 %)</td><td class="text-ellipsis">$ 0.7912 (8.32 %)</td><td class="text-ellipsis">$ 0.7607 (8.00 %)</td></tr></tbody></table></div></div><div class="unravel-card shadow"><div class="v2 unravel-table-container compact-table p-0"><div class="table-title"><h5>Worker node recommendations</h5><div class="mt-2" style="color:var(--neutral-120)">Based on data from 2024-11-25 13:06:10 UTC to 2024-12-05 13:06:10 UTC.</div></div><table><thead><tr><th class="text-left text-ellipsis"></th><th class="text-left text-ellipsis">Current instance</th><th class="text-left text-ellipsis">Option 1  <span style="background-color:#486AE3;color:var(--neutral-10);padding:4px;border-radius:4px;font-weight:normal;font-size:10px">Max savings  </span></th><th class="text-left text-ellipsis">Option 2</th><th class="text-left text-ellipsis">Option 3</th></tr></thead><tbody><tr><td class="text-ellipsis">Compute</td><td class="text-ellipsis" style="color:var(--neutral-120)">Standard_D16ads_v5</td><td class="text-ellipsis">Standard_D16ds_v4</td><td class="text-ellipsis">Standard_D16d_v4</td><td class="text-ellipsis">Standard_D16a_v4</td></tr><tr><td class="text-ellipsis">Memory</td><td class="text-ellipsis" style="color:var(--neutral-120)">64.0 GiB</td><td class="text-ellipsis">64 GiB</td><td class="text-ellipsis">64 GiB</td><td class="text-ellipsis">64 GiB</td></tr><tr><td class="text-ellipsis">Cores</td><td class="text-ellipsis" style="color:var(--neutral-120)">16 cores</td><td class="text-ellipsis">16 cores</td><td class="text-ellipsis">16 cores</td><td class="text-ellipsis">16 cores</td></tr><tr><td class="text-ellipsis">Price per hour</td><td class="text-ellipsis" style="color:var(--neutral-120)">$ 1.42 /hr</td><td class="text-ellipsis">$ 1.35 /hr</td><td class="text-ellipsis">$ 1.35 /hr</td><td class="text-ellipsis">$ 1.22 /hr</td></tr><tr><td>Type</td><td style="color:var(--neutral-120)">General purpose</td><td>General purpose</td><td>General purpose</td><td>General purpose</td></tr><tr><td class="text-ellipsis">Min Worker</td><td class="text-ellipsis" style="color:var(--neutral-120)"></td><td class="text-ellipsis">2</td><td class="text-ellipsis">2</td><td class="text-ellipsis">2</td></tr><tr><td class="text-ellipsis">Max Worker</td><td class="text-ellipsis" style="color:var(--neutral-120)"></td><td class="text-ellipsis">5</td><td class="text-ellipsis">5</td><td class="text-ellipsis">5</td></tr><tr><td class="text-ellipsis">Potential savings per run</td><td class="text-ellipsis" style="color:var(--neutral-120)"></td><td class="text-ellipsis">$ 6.9871 (73.47 %)</td><td class="text-ellipsis">$ 6.9871 (73.47 %)</td><td class="text-ellipsis">$ 6.3872 (67.16 %)</td></tr></tbody></table></div></div></div>
 
-<div class=\"mb-4\">
-    <div class=\"mb-1\" style=\"color: var(--neutral-130);\">
-        UNTAPPED SAVINGS 
-        <i style=\"cursor:pointer\" class=\"v2-info\" title=\"Calculation is based on last 10 days (configurable) of runs if the recommended instance was used.\"></i>
-    </div>
-    <div class=\"d-flex \">
-        <h4>$ 1.28</h4>
-        <p class=\"ml-1\" style=\"font-style:italic\">in the last 10 days for 38 runs</p>
-    </div>
-    <div>$ 0.0337 average savings per run</div>
-</div>
-<div>
-    <div class=\"unravel-card shadow\">
-        <div class=\"v2 unravel-table-container compact-table p-0\">
-            <div class=\"table-title\">
-                <h5>Driver node recommendations</h5>
-                <div class=\"mt-2\" style=\"color:var(--neutral-120)\">Based on data from 2024-07-15 00:48:03 UTC to 2024-08-19 11:26:19 UTC.</div>
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th class=\"text-left text-ellipsis\"></th>
-                        <th class=\"text-left text-ellipsis\">Current instance</th>
-                        <th class=\"text-left text-ellipsis\">
-                            Option 1  
-                            <span style=\"background-color:#486AE3;color:var(--neutral-10);padding:4px;border-radius:4px;font-weight:normal;font-size:10px\">Max savings</span>
-                        </th>
-                        <th class=\"text-left text-ellipsis\">Option 2</th>
-                        <th class=\"text-left text-ellipsis\">Option 3</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class=\"text-ellipsis\">Compute</td>
-                        <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\">Standard_DS3_v2</td>
-                        <td class=\"text-ellipsis\">Standard_L4s</td>
-                        <td class=\"text-ellipsis\">Standard_F4</td>
-                        <td class=\"text-ellipsis\">Standard_F4s_v2</td>
-                    </tr>
-                    <tr>
-                        <td class=\"text-ellipsis\">Memory</td>
-                        <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\">14 GiB</td>
-                        <td class=\"text-ellipsis\">32 GiB</td>
-                        <td class=\"text-ellipsis\">8 GiB</td>
-                        <td class=\"text-ellipsis\">8 GiB</td>
-                    </tr>
-                    <tr>
-                        <td class=\"text-ellipsis\">Cores</td>
-                        <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\">4 cores</td>
-                        <td class=\"text-ellipsis\">4 cores</td>
-                        <td class=\"text-ellipsis\">4 cores</td>
-                        <td class=\"text-ellipsis\">4 cores</td>
-                    </tr>
-                    <tr>
-                        <td class=\"text-ellipsis\">Price per hour</td>
-                        <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\">$ 0.41 /hr</td>
-                        <td class=\"text-ellipsis\">$ 0.15 /hr</td>
-                        <td class=\"text-ellipsis\">$ 0.27 /hr</td>
-                        <td class=\"text-ellipsis\">$ 0.28 /hr</td>
-                    </tr>
-                    <tr>
-                        <td>Type</td>
-                        <td style=\"color:var(--neutral-120)\">General purpose</td>
-                        <td>Storage optimized</td>
-                        <td>Compute optimized</td>
-                        <td>Compute optimized</td>
-                    </tr>
-                    <tr>
-                        <td class=\"text-ellipsis\">Potential savings per run</td>
-                        <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\"></td>
-                        <td class=\"text-ellipsis\">$ 0.0112 (20.78 %)</td>
-                        <td class=\"text-ellipsis\">$ 0.0057 (10.56 %)</td>
-                        <td class=\"text-ellipsis\">$ 0.0053 (9.90 %)</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-</div>
-<div>
-    <div class=\"unravel-card shadow\">
-        <div class=\"v2 unravel-table-container compact-table p-0\">
-            <div class=\"table-title\">
-                <h5>Worker node recommendations</h5>
-                <div class=\"mt-2\" style=\"color:var(--neutral-120)\">Based on data from 2024-07-15 00:48:03 UTC to 2024-08-19 11:26:19 UTC.</div>
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th class=\"text-left text-ellipsis\"></th>
-                        <th class=\"text-left text-ellipsis\">Current instance</th>
-                        <th class=\"text-left text-ellipsis\">
-                            Option 1  
-                            <span style=\"background-color:#486AE3;color:var(--neutral-10);padding:4px;border-radius:4px;font-weight:normal;font-size:10px\">Max savings</span>
-                        </th>
-                        <th class=\"text-left text-ellipsis\">Option 2</th>
-                        <th class=\"text-left text-ellipsis\">Option 3</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class=\"text-ellipsis\">Compute</td>
-                        <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\">Standard_DS3_v2</td>
-                        <td class=\"text-ellipsis\">Standard_L4s</td>
-                        <td class=\"text-ellipsis\">Standard_F4</td>
-                        <td class=\"text-ellipsis\">Standard_F4s_v2</td>
-                    </tr>
-                    <tr>
-                        <td class=\"text-ellipsis\">Memory</td>
-                        <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\">14.0 GiB</td>
-                        <td class=\"text-ellipsis\">32 GiB</td>
-                        <td class=\"text-ellipsis\">8 GiB</td>
-                        <td class=\"text-ellipsis\">8 GiB</td>
-                    </tr>
-                    <tr>
-                        <td class=\"text-ellipsis\">Cores</td>
-                        <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\">4 cores</td>
-                        <td class=\"text-ellipsis\">4 cores</td>
-                        <td class=\"text-ellipsis\">4 cores</td>
-                        <td class=\"text-ellipsis\">4 cores</td>
-                    </tr>
-                    <tr>
-                        <td class=\"text-ellipsis\">Price per hour</td>
-                        <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\">$ 0.41 /hr</td>
-                        <td class=\"text-ellipsis\">$ 0.15 /hr</td>
-                        <td class=\"text-ellipsis\">$ 0.27 /hr</td>
-                        <td class=\"text-ellipsis\">$ 0.28 /hr</td>
-                    </tr>
-                    <tr>
-                        <td>Type</td>
-                        <td style=\"color:var(--neutral-120)\">General purpose</td>
-                        <td>Storage optimized</td>
-                        <td>Compute optimized</td>
-                        <td>Compute optimized</td>
-                    </tr>
-                    <tr>
-                        <td class=\"text-ellipsis\">Potential savings per run</td>
-                        <td class=\"text-ellipsis\" style=\"color:var(--neutral-120)\"></td>
-                        <td class=\"text-ellipsis\">$ 0.0225 (41.57 %)</td>
-                        <td class=\"text-ellipsis\">$ 0.0114 (21.12 %)</td>
-                        <td class=\"text-ellipsis\">$ 0.0107 (19.80 %)</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-</div>
 """
         mk_list.append({"key":"Cost Savings Insights", "mk": value})
         body_text = """
 ### Contended Driver
 
-**Impact**
+# Problem
 
-When Spark performs heavy operations on the driver side, it leads to underutilized executors, which impacts both cost and performance.
+**Job:** `NodeRightSizeWithAutoScale_2`  
+**Workspace:** `dbx.v4796.playground.customer-demos.shwetha`  
+**Issue:** Contention with driver time comprising **61% of total execution time**, indicating possible inefficiencies in the code or bottlenecks on resources.  
 
-In this case, driver contention accounted for **52%** of the total Spark application execution time. This resulted in **1 minute and 33 seconds** of executors running idle and **$ 0.03** wastage. You can [view more detailed insights and resource usage here](http://44.207.116.9:3000/#/app/application/spark?execId=app-20240724231513-0000&clusterUid=0724-231054-j6y8msjz).
+**Recent Run ID:** `20934596855561`
+
+---
+
+## Observations
+
+1. **Driver-Only Operations**  
+   - The majority of operations are performed on the driver (e.g., Python pandas processing).  
+   - Heavy operations on the driver lead to **underutilized executors**, impacting both **cost** and **performance**.  
+
+2. **Idle Cluster**  
+   - The cluster remains idle for extended periods, likely due to a **long auto-termination timeout**.  
+
+3. **External Dependency Delays**  
+   - Driver code is waiting for **slow responses from external services or infrastructure** (e.g., SQL database reads).  
+
+---
+
+## Potential Savings
+
+- **Monthly Savings:** $8.17  
+- **Annualized Savings:** $99.43  
+
+---
+
+## Next Steps
+
+To realize the savings, review the following **remediation** actions:
+
+- Optimize driver-based operations by delegating tasks to executors.  
+- Reduce auto-termination timeout to minimize idle cluster costs.  
+- Improve response times for external services or cache frequently accessed data.  
+
 
 **Remediation**
 
-The remediation will depend on the specific root cause detected. Common remediation steps are:
+Remediation steps will vary based on the identified root cause. Common actions include:      
 
-1. If the driver code is using heavyweight Python operations like pandas processing after collecting data to the driver, consider rewriting the code to use Spark for processing in the workers.  
-    - For example: Replace `toPandas()` with Spark distributed DataFrames using `pandas_api()` to avoid collecting all data at the driver.
-    - Ensure pandas DataFrame operations are avoided in PySpark code; instead, leverage `pandas_api()` functions.
-  
-2. If the workers are sitting idle due to a long auto-termination timeout, consider lowering the timeout interval.
 
-3. If the driver code is waiting on external services or infrastructure that are slow to respond (e.g., waiting on reads from an external SQL database), consider increasing the number of partitions to work in parallel or using a separate Databricks Job to copy the data asynchronously ahead of time.
+#### Avoid heavy Python operations in driver code       
+If the driver code involves heavy Python operations like pandas processing after data collection, consider rewriting the code to leverage Spark for processing directly on the workers.
+- Replace `toPandas()` with Spark distributed DataFrames using `pandas_api()` to avoid collecting all data at the driver.  
+- Ensure pandas DataFrame operations are avoided in PySpark code; instead, leverage `pandas_api()` functions.  
+- If the workers are sitting idle due to a long auto-termination timeout, consider lowering the timeout interval.
 
-4. If the driver code is collecting the results, try to avoid collecting all records and instead collect only a few samples. For example: Replace `collect()` with functions like `take(n)`.
 
-***Based on the analysis, below are the possible code lines which are causing contended driver***
-```python
-36  pandas_df = df1.toPandas()
-37  rows_count = pandas_df.shape()[0]
-```
-***Possible fix for the above code inefficiency***
+#### Optimize for slow external services    
+If the driver code is waiting on external services or infrastructure that are slow to respond (e.g., waiting on reads from an external SQL database), consider increasing the number of partitions to work in parallel or using a separate Databricks Job to copy the data asynchronously ahead of time.
 
-```python
-# Replace toPandas() with Spark distributed DataFrames using pandas_api() to avoid collecting all data at the driver.
-pandas_df = PandasOnSparkDF(df1)
-```
+
+#### Avoid collecting results at driver   
+If the driver code is collecting the results, try to avoid collecting all records and instead collect only a few samples.  
+For example: Replace `collect()` with functions like `take(n)`.
+
 """
         url = f'https://api.github.com/repos/{repo_name}/pulls/{pr_number}/comments'
 
@@ -903,25 +824,57 @@ pandas_df = PandasOnSparkDF(df1)
         # Send POST request
         response = requests.post(url, headers=headers, data=json.dumps(data))
         body_text = """
-### Slow SQL Operator
+### Inefficient join condition
 
-**Impact**
+# Problem
 
-When Spark performs some heavy operations like scans, joins, or writes, it may cause a bottleneck in the application with respect to overall time.
+**Job:** `NodeRightSizeWithAutoScale_2`  
+**Workspace:** `dbx.v4796.playground.customer-demos.shwetha`  
+**Stage:** 10  
+**Spark Application ID:** `app-20241205115301-0000`  
+**Recent Run ID:** `20934596855561`  
 
-Delays due to this slow SQL operator have increased the application's run time by almost **1 Minutes 16 Seconds**. This bottleneck was observed in **Stage 1** for the underlying Spark execution ID **1**. You can [view more detailed insights and resource usage here](http://44.207.116.9:3000/#/app/application/spark?execId=app-20240724231513-0000&clusterUid=0724-231054-j6y8msjz).
+---
 
-**Resolution**
+## Issue
 
-Remediation steps involve optimizing the number of partitions for scan or join operators:
+The **BroadcastHashJoin** operator in stage 10 has an **inefficient join condition**, leading to performance bottlenecks:
 
-1. You can try to optimize the number of tasks by tuning `spark.sql.files.maxPartitionBytes` for slow scan operators.
-2. You can try to optimize the number of partitions by tuning `spark.sql.shuffle.partitions` for slow shuffle operators.
+1. **Symptoms:**  
+   - The total number of joined rows exceeds the maximum number of rows in either the left or right join tables.  
+   - This indicates that the join keys may have **low cardinality**, resulting in redundant rows being generated.
 
-***Based on the analysis, below are the possible code lines which are causing slow sql operator event***
-```python
-27  df1 = spark.sql("SELECT COUNT(1), sym FROM global_temp.t1 GROUP BY sym")
+2. **Implications:**  
+   - Increased computational overhead.  
+   - Potential underutilization of resources.  
+
+---
+
+## Recommendations
+
+Verify if there are a lot of null values in tables used in the join or group-by keys. If yes, preprocess the null values before proceeding with the solution if necessary.    
+
+#### Re-partition the data     
+
+- Review the join conditions and keys in your query. Check for any skewness (an uneven distribution of data) in the tables involved in the join condition. 
+- If skewness is found, consider repartitioning the data before the join.
+
+#### Salting Technique   
+
+- Consider altering the join key to ensure even distribution of data using the salting method. For instance, if data skew is caused by a specific column (key), adding a random partitioning key can help to evenly distribute the data as follows:
+
+```scala
+val modifiedKeyForData = origDataSkew.map { case (key, value) => 
+  (key + scala.util.Random.nextInt(currentPartitions), value) 
+}
+val dataSkewFixed = modifiedKeyForData.partitionBy(currentPartitions)
 ```
+
+### Best Practices     
+- It typically occurs due to uneven key distributions or changes in data characteristics in dynamic workloads.
+- This issue happens when the join predicate is either missed/omitted (i.e., a Cartesian Product) or the join predicates are not selective enough.
+- In such cases, the developer should review the query to see if the exploding join is warranted by business semantics or can be improved by adding more selective join predicates.
+
 """
         url = f'https://api.github.com/repos/{repo_name}/pulls/{pr_number}/comments'
 
