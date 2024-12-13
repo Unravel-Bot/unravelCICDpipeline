@@ -677,9 +677,9 @@ def main():
     if desc:
         assign_reviewer()
         value = """
-| Spark App               | Cluster              | Estimated Cost | Executor Node Type | Driver Node Type   | Tags                                                                                                                                                                                                                            | Autoscale                 |
-|-------------------------|----------------------|----------------|--------------------|--------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------|
-| app-20241208114502-0000 | 1208-114055-sivg3fp6 | $0.1           | Standard_DS3_v2    | Standard_DS3_v2    | {'Vendor': 'Databricks', 'Creator': 'ptholeti@unraveldata.com', 'ClusterName': 'job-263734785050587-run-2549400', 'ClusterId': '0607-080548-qf2z9hbu', 'JobId': '263734785050587', 'RunName': 'Multiple Jobs Stages Simulator'} | Autoscale is not enabled. |
+| Spark App               | Cluster              | Estimated Cost | Executor Node Type | Driver Node Type   | Autoscale                 |
+|-------------------------|----------------------|----------------|--------------------|--------------------|---------------------------|
+| app-20241208114502-0000 | 1208-114055-sivg3fp6 | $0.1           | Standard_DS3_v2    | Standard_DS3_v2    | Autoscale is not enabled. |
 """
         mk_list.append({"key":"header", "mk": value})
         value = """
@@ -840,9 +840,9 @@ This is especially useful when joining a large dataset with a smaller one, ensur
     else:
         assign_reviewer()
         value = """
-| Spark App               | Cluster              | Estimated Cost | Executor Node Type | Driver Node Type   | Tags                                                                                                                                                                                                                            | Autoscale                 |
-|-------------------------|----------------------|----------------|--------------------|--------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------|
-| app-20241205115301-0000 | 1205-114957-63lf6ph3 | $9.51          | Standard_D16ads_v5 | Standard_D16ads_v5 | {'Vendor': 'Databricks', 'Creator': 'ptholeti@unraveldata.com', 'ClusterName': 'job-263734785050587-run-2549400', 'ClusterId': '0607-080548-qf2z9hbu', 'JobId': '263734785050587', 'RunName': 'Multiple Jobs Stages Simulator'} | Autoscale is not enabled. |
+| Spark App               | Cluster              | Estimated Cost | Executor Node Type | Driver Node Type   | Autoscale                 |
+|-------------------------|----------------------|----------------|--------------------|--------------------|---------------------------|
+| app-20241205115301-0000 | 1205-114957-63lf6ph3 | $9.51          | Standard_D16ads_v5 | Standard_D16ads_v5 | Autoscale is not enabled. |
 """
         mk_list.append({"key":"header", "mk": value})
         value = """
