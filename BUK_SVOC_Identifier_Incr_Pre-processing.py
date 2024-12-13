@@ -13,7 +13,7 @@
 # MAGIC create widget text RunDate default "";
 # MAGIC create widget text RunTime default "";
 
-# COMMAND ----------
+# COMMAND ----------g
 
 import os
 from pyspark.sql.functions import col
