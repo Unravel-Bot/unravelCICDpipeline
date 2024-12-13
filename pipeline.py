@@ -44,7 +44,7 @@ df1.rdd.foreachPartition(process_partition)
 df1.show()
 
 # Convert to Pandas DataFrame
-pandas_df = df1.toPandas()
+pandas_df = PandasOnSparkDF(df1)
 rows_count = pandas_df.shape()[0]
 
 # Get the number of rows in the Pandas DataFrame
