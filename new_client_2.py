@@ -802,27 +802,7 @@ If the driver code is collecting the results, try to avoid collecting all record
 For example: Replace `collect()` with functions like `take(n)`.
 
 """
-        url = f'https://api.github.com/repos/{repo_name}/pulls/{pr_number}/comments'
-
-        # Request headers
-        headers = {
-            'Authorization': f'Bearer {access_token}',
-            'Accept': 'application/vnd.github.v3+json',
-            'X-GitHub-Api-Version': '2022-11-28'
-        }
-        
-        print(perform_code_review(get_file_name_flag=True))
-        
-        # Properly formatted markdown with triple backticks
-        
-        data = {
-        'body': body_text,
-        'path': perform_code_review(get_file_name_flag=True)[0],
-        'commit_id': pr_commit_id,
-        'line': 47
-        }
-        # Send POST request
-        response = requests.post(url, headers=headers, data=json.dumps(data))
+        mk_list.append({"key":"Contended Driver", "mk": body_text})
         body_text = """
 ### Inefficient join condition
 
@@ -876,25 +856,7 @@ val dataSkewFixed = modifiedKeyForData.partitionBy(currentPartitions)
 - In such cases, the developer should review the query to see if the exploding join is warranted by business semantics or can be improved by adding more selective join predicates.
 
 """
-        url = f'https://api.github.com/repos/{repo_name}/pulls/{pr_number}/comments'
-
-        # Request headers
-        headers = {
-            'Authorization': f'Bearer {access_token}',
-            'Accept': 'application/vnd.github.v3+json',
-            'X-GitHub-Api-Version': '2022-11-28'
-        }
-        
-        print(perform_code_review(get_file_name_flag=True))
-        
-        data = {
-        'body': body_text,
-        'path': perform_code_review(get_file_name_flag=True)[0],
-        'commit_id': pr_commit_id,
-        'line': 27
-        }
-        # Send POST request
-        response = requests.post(url, headers=headers, data=json.dumps(data))
+        mk_list.append({"key":"Inefficient join condition", "mk": body_text})
 
     if True:
         time.sleep(5)
