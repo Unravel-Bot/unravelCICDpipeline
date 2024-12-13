@@ -761,11 +761,9 @@ Go to the cluster configuration page for the job [**257510190261732**](https://a
 
 # Problem
 
-# Problem Statement
-
 **Job:** `Inefficient_JoinType_EventGenerator_Application`  
 **Workspace:** `dbx.v4796.playground.customer-demos.shwetha`  
-**Cluster:** `1208-114055-sivg3fp6`  
+**Stage:** 16  
 **Spark Application ID:** `app-20241208114502-0000`  
 **Recent Run ID:** `149641318783677`  
 
@@ -773,52 +771,63 @@ Go to the cluster configuration page for the job [**257510190261732**](https://a
 
 ## Issue
 
-The job is experiencing **over-provisioning of resources** for the allocated cluster, leading to underutilization and increased costs.
-
-### Resource Over-Provisioning Details
-
-| Component  | Cores (vCPUs) | Memory (GB) |
-|------------|---------------|-------------|
-| **Driver** | 4             | 14          |
-| **Worker** | 4             | 14          |
+An **inefficient join type** was identified in the **SortMergeJoin** operator in stage 16 of the job. This suboptimal join implementation contributes to higher resource consumption and execution inefficiencies.
 
 ---
 
 ## Observations
 
-1. **Excess Resource Allocation**  
-   - Both the driver and worker nodes are over-provisioned for the workload, resulting in resource underutilization.
+1. **SortMergeJoin Inefficiency**
+   - SortMergeJoin requires sorting and shuffling large datasets across partitions, which can lead to performance issues:
+     - Excessive shuffling of data.  
+     - Uneven workload distribution due to skewed join keys.  
+     - High memory usage during sorting operations.
 
-2. **Low Cost Impact**  
-   - Although the potential savings are modest (**$0.06/month**, **$0.73/year**), optimizing the configuration can enhance cost efficiency for larger-scale or similar workloads.
+2. **Query Insight**
+   - Navigate to the **Analysis Tab** and inspect **Query 4** to analyze the root cause:
+     - Examine join keys and tables involved.  
+     - Look for skewed data or unnecessary large data movements.  
+
+3. **Cost Impact**
+   - **Potential Monthly Savings:** $0.026  
+   - **Potential Annualized Savings:** $0.314  
 
 ---
 
 ## Recommendations
 
-1. **Right-Size the Cluster**
-   - Reduce the cores and memory allocated to the driver and workers to match actual workload requirements.  
+### 1. Optimize Join Strategy
+- **Switch Join Type:**  
+  - Use **BroadcastHashJoin** if one side of the join is small enough to fit in memory.  
+  - This reduces data shuffling and can improve execution time.
 
-2. **Enable Autoscaling**
-   - Configure autoscaling to dynamically adjust resource allocation based on workload demands, especially for bursty or unpredictable jobs.  
+- **Enable Skew Join Optimization:**  
+  - For skewed join keys, configure Spark to handle large skewed partitions effectively using `spark.sql.adaptive.skewJoin.enabled`.
 
-3. **Analyze Workload Usage**
-   - Use monitoring tools to understand resource consumption trends and adjust configurations accordingly.
+### 2. Adjust Partitioning
+- **Repartition Data:**  
+  - Ensure the data is evenly distributed by repartitioning on the join keys.  
+  - This minimizes shuffling and prevents executor bottlenecks.
 
-4. **Consider Shared Resources**
-   - For jobs with minimal cost impact, consider running them on shared or smaller clusters to reduce overhead.
+- **Optimize Table Layout:**  
+  - Pre-sort and partition the tables on the join keys to reduce sorting overhead during execution.
+
+### 3. Analyze and Monitor Performance
+- **Review Execution Plan:**  
+  - From the **Analysis Tab**, click on the **SortMergeJoin** operator for more details on its resource usage and runtime.  
+  - Use this insight to refine the query further.
+
+- **Iterative Testing:**  
+  - Test the impact of each optimization to identify the most effective changes.
 
 ---
 
-## Potential Savings
+## Conclusion
 
-- **Monthly Savings:** $0.06  
-- **Annualized Savings:** $0.73  
-
-While the immediate savings are small, implementing these changes ensures better scalability and cost management for future workloads.
+By optimizing the join type and addressing inefficiencies, the job can achieve better performance and scalability, with potential cost savings of **$0.026/month** or **$0.314/year**. While the immediate savings are modest, the adjustments ensure a more robust and cost-effective setup for similar workloads.
 
 
-## Recommendations
+## Remediation
 
 
 Use broadcast hints to broadcast the smaller table.    
@@ -827,7 +836,7 @@ Broadcast hints in Databricks enable the forced broadcast of small tables to all
 This is especially useful when joining a large dataset with a smaller one, ensuring faster and more efficient query performance.     
 
 """
-        mk_list.append({"key":"Inefficient join condition", "mk": body_text})
+        mk_list.append({"key":"Inefficient join type", "mk": body_text})
     else:
         assign_reviewer()
         value = """
