@@ -827,7 +827,7 @@ This is especially useful when joining a large dataset with a smaller one, ensur
 
 """
         mk_list.append({"key":"Inefficient join condition", "mk": body_text})
-    else:
+    elif len(job_run_list) == 0:
         assign_reviewer()
         value = """
 | Spark App               | Cluster              | Estimated Cost | Executor Node Type | Driver Node Type   | Tags                                                                                                                                                                                                                            | Autoscale                 |
