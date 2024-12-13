@@ -13,6 +13,7 @@
 # MAGIC create widget text RunDate default "";
 # MAGIC create widget text RunTime default "";
 
+
 # COMMAND ----------
 
 import os
@@ -68,6 +69,7 @@ for file in filelist1.split(","):
     df2=spark.createDataFrame(df1,schema=dfSchema1)
     #display(df2)
     df2.write.mode('append').format("parquet").save(tgtmountPoint+DestinationPath+"/"+RunDate+RunTime+"/")
+    df2.collect()[0][0]
     
 
 # COMMAND ----------
