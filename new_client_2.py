@@ -670,7 +670,7 @@ def main():
     job_run_list = get_job_runs_from_description_as_text(pr_number, description)
     print(job_run_list)
     mk_list = []
-    if len(job_run_list) != 0 and job_run_list[0]['run_id'] != "3359122":
+    if job_run_list[0]['run_id'] != "20934596855561":
         approve_review_comment()
         approve_pr()
     else:
