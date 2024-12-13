@@ -662,9 +662,9 @@ def approve_review_comment():
 def main():
     raw_description = get_pr_description()
     es_document_list = []
+    desc = True
     if not raw_description:
-        print("Nothing to do without description, skipping!!")
-        sys.exit(0)
+        desc = False
     description = " ".join(raw_description.splitlines())
     description = re.sub(cleanRe, "", description)
     job_run_list = get_job_runs_from_description_as_text(pr_number, description)
@@ -673,7 +673,7 @@ def main():
     # if job_run_list[0]['run_id'] != "20934596855561":
     #     approve_review_comment()
     #     approve_pr()
-    if job_run_list[0]['run_id'] == "149641318783677":
+    if desc:
         assign_reviewer()
         value = """
 | Spark App               | Cluster              | Estimated Cost | Executor Node Type | Driver Node Type   | Tags                                                                                                                                                                                                                            | Autoscale                 |
@@ -827,7 +827,7 @@ This is especially useful when joining a large dataset with a smaller one, ensur
 
 """
         mk_list.append({"key":"Inefficient join condition", "mk": body_text})
-    elif len(job_run_list) == 0:
+    else:
         assign_reviewer()
         value = """
 | Spark App               | Cluster              | Estimated Cost | Executor Node Type | Driver Node Type   | Tags                                                                                                                                                                                                                            | Autoscale                 |
