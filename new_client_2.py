@@ -670,9 +670,163 @@ def main():
     job_run_list = get_job_runs_from_description_as_text(pr_number, description)
     print(job_run_list)
     mk_list = []
-    if job_run_list[0]['run_id'] != "20934596855561":
-        approve_review_comment()
-        approve_pr()
+    # if job_run_list[0]['run_id'] != "20934596855561":
+    #     approve_review_comment()
+    #     approve_pr()
+    if job_run_list[0]['run_id'] == "149641318783677":
+        assign_reviewer()
+        value = """
+| Spark App               | Cluster              | Estimated Cost | Executor Node Type | Driver Node Type   | Tags                                                                                                                                                                                                                            | Autoscale                 |
+|-------------------------|----------------------|----------------|--------------------|--------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------|
+| app-20241208114502-0000 | 1208-114055-sivg3fp6 | $0.1           | Standard_DS3_v2    | Standard_DS3_v2    | {'Vendor': 'Databricks', 'Creator': 'ptholeti@unraveldata.com', 'ClusterName': 'job-263734785050587-run-2549400', 'ClusterId': '0607-080548-qf2z9hbu', 'JobId': '263734785050587', 'RunName': 'Multiple Jobs Stages Simulator'} | Autoscale is not enabled. |
+"""
+        mk_list.append({"key":"header", "mk": value})
+        value = """
+## Insight: Node Resizing for Jobs Compute
+
+### Problem:
+
+# Problem Statement
+
+**Job:** `Inefficient_JoinType_EventGenerator_Application`  
+**Workspace:** `dbx.v4796.playground.customer-demos.shwetha`  
+**Cluster:** `1208-114055-sivg3fp6`  
+**Spark Application ID:** `app-20241208114502-0000`  
+**Recent Run ID:** `149641318783677`  
+
+---
+
+## Issue
+
+The job is experiencing **over-provisioning of resources** for the allocated cluster, leading to underutilization and increased costs.
+
+### Resource Over-Provisioning Details
+
+| Component  | Cores (vCPUs) | Memory (GB) |
+|------------|---------------|-------------|
+| **Driver** | 4             | 14          |
+| **Worker** | 4             | 14          |
+
+---
+
+## Observations
+
+1. **Excess Resource Allocation**  
+   - Both the driver and worker nodes are over-provisioned for the workload, resulting in resource underutilization.
+
+2. **Low Cost Impact**  
+   - Although the potential savings are modest (**$0.06/month**, **$0.73/year**), optimizing the configuration can enhance cost efficiency for larger-scale or similar workloads.
+
+---
+
+## Recommendations
+
+1. **Right-Size the Cluster**
+   - Reduce the cores and memory allocated to the driver and workers to match actual workload requirements.  
+
+2. **Enable Autoscaling**
+   - Configure autoscaling to dynamically adjust resource allocation based on workload demands, especially for bursty or unpredictable jobs.  
+
+3. **Analyze Workload Usage**
+   - Use monitoring tools to understand resource consumption trends and adjust configurations accordingly.
+
+4. **Consider Shared Resources**
+   - For jobs with minimal cost impact, consider running them on shared or smaller clusters to reduce overhead.
+
+---
+
+## Potential Savings
+
+- **Monthly Savings:** $0.06  
+- **Annualized Savings:** $0.73  
+
+While the immediate savings are small, implementing these changes ensures better scalability and cost management for future workloads.
+
+
+### Remediation:
+Go to the cluster configuration page for the job [**257510190261732**](https://adb-1635409050664771.11.azuredatabricks.net/?o=1635409050664771#job/257510190261732) and change the driver node to **Standard_L4s** and worker node to **Standard_L4s** respectively to maximize cost savings.    
+    
+
+&nbsp;     
+<!-- Add your HTML table here -->
+<div><div class="unravel-card shadow"><div class="v2 unravel-table-container compact-table p-0"><div class="table-title"><h5>Driver node recommendations</h5><div class="mt-2" style="color:var(--neutral-120)">Based on data from 2024-11-28 11:49:32 UTC to 2024-12-08 11:49:32 UTC.</div></div><table><thead><tr><th class="text-left text-ellipsis"></th><th class="text-left text-ellipsis">Current instance</th><th class="text-left text-ellipsis">Option 1  <span style="background-color:#486AE3;color:var(--neutral-10);padding:4px;border-radius:4px;font-weight:normal;font-size:10px">Max savings  </span></th><th class="text-left text-ellipsis">Option 2</th><th class="text-left text-ellipsis">Option 3</th></tr></thead><tbody><tr><td class="text-ellipsis">Compute</td><td class="text-ellipsis" style="color:var(--neutral-120)">Standard_DS3_v2</td><td class="text-ellipsis">Standard_L4s</td><td class="text-ellipsis">Standard_F4</td><td class="text-ellipsis">Standard_F4s_v2</td></tr><tr><td class="text-ellipsis">Memory</td><td class="text-ellipsis" style="color:var(--neutral-120)">14 GiB</td><td class="text-ellipsis">32 GiB</td><td class="text-ellipsis">8 GiB</td><td class="text-ellipsis">8 GiB</td></tr><tr><td class="text-ellipsis">Cores</td><td class="text-ellipsis" style="color:var(--neutral-120)">4 cores</td><td class="text-ellipsis">4 cores</td><td class="text-ellipsis">4 cores</td><td class="text-ellipsis">4 cores</td></tr><tr><td class="text-ellipsis">Price per hour</td><td class="text-ellipsis" style="color:var(--neutral-120)">$ 0.41 /hr</td><td class="text-ellipsis">$ 0.15 /hr</td><td class="text-ellipsis">$ 0.27 /hr</td><td class="text-ellipsis">$ 0.28 /hr</td></tr><tr><td>Type</td><td style="color:var(--neutral-120)">General purpose</td><td>Storage optimized</td><td>Compute optimized</td><td>Compute optimized</td></tr><tr><td class="text-ellipsis">Potential savings per run</td><td class="text-ellipsis" style="color:var(--neutral-120)"></td><td class="text-ellipsis">$ 0.0201 (20.78 %)</td><td class="text-ellipsis">$ 0.0102 (10.56 %)</td><td class="text-ellipsis">$ 0.0096 (9.90 %)</td></tr></tbody></table></div></div><div class="unravel-card shadow"><div class="v2 unravel-table-container compact-table p-0"><div class="table-title"><h5>Worker node recommendations</h5><div class="mt-2" style="color:var(--neutral-120)">Based on data from 2024-11-28 11:49:32 UTC to 2024-12-08 11:49:32 UTC.</div></div><table><thead><tr><th class="text-left text-ellipsis"></th><th class="text-left text-ellipsis">Current instance</th><th class="text-left text-ellipsis">Option 1  <span style="background-color:#486AE3;color:var(--neutral-10);padding:4px;border-radius:4px;font-weight:normal;font-size:10px">Max savings  </span></th><th class="text-left text-ellipsis">Option 2</th><th class="text-left text-ellipsis">Option 3</th></tr></thead><tbody><tr><td class="text-ellipsis">Compute</td><td class="text-ellipsis" style="color:var(--neutral-120)">Standard_DS3_v2</td><td class="text-ellipsis">Standard_L4s</td><td class="text-ellipsis">Standard_F4s</td><td class="text-ellipsis">Standard_F4</td></tr><tr><td class="text-ellipsis">Memory</td><td class="text-ellipsis" style="color:var(--neutral-120)">14.0 GiB</td><td class="text-ellipsis">32 GiB</td><td class="text-ellipsis">8 GiB</td><td class="text-ellipsis">8 GiB</td></tr><tr><td class="text-ellipsis">Cores</td><td class="text-ellipsis" style="color:var(--neutral-120)">4 cores</td><td class="text-ellipsis">4 cores</td><td class="text-ellipsis">4 cores</td><td class="text-ellipsis">4 cores</td></tr><tr><td class="text-ellipsis">Price per hour</td><td class="text-ellipsis" style="color:var(--neutral-120)">$ 0.41 /hr</td><td class="text-ellipsis">$ 0.15 /hr</td><td class="text-ellipsis">$ 0.27 /hr</td><td class="text-ellipsis">$ 0.27 /hr</td></tr><tr><td>Type</td><td style="color:var(--neutral-120)">General purpose</td><td>Storage optimized</td><td>Compute optimized</td><td>Compute optimized</td></tr><tr><td class="text-ellipsis">Potential savings per run</td><td class="text-ellipsis" style="color:var(--neutral-120)"></td><td class="text-ellipsis">$ 0.0402 (41.57 %)</td><td class="text-ellipsis">$ 0.0204 (21.12 %)</td><td class="text-ellipsis">$ 0.0204 (21.12 %)</td></tr></tbody></table></div></div></div>
+
+
+"""
+        mk_list.append({"key":"Cost Savings Insights", "mk": value})
+        
+        body_text = """
+### Inefficient join type
+
+# Problem
+
+# Problem Statement
+
+**Job:** `Inefficient_JoinType_EventGenerator_Application`  
+**Workspace:** `dbx.v4796.playground.customer-demos.shwetha`  
+**Cluster:** `1208-114055-sivg3fp6`  
+**Spark Application ID:** `app-20241208114502-0000`  
+**Recent Run ID:** `149641318783677`  
+
+---
+
+## Issue
+
+The job is experiencing **over-provisioning of resources** for the allocated cluster, leading to underutilization and increased costs.
+
+### Resource Over-Provisioning Details
+
+| Component  | Cores (vCPUs) | Memory (GB) |
+|------------|---------------|-------------|
+| **Driver** | 4             | 14          |
+| **Worker** | 4             | 14          |
+
+---
+
+## Observations
+
+1. **Excess Resource Allocation**  
+   - Both the driver and worker nodes are over-provisioned for the workload, resulting in resource underutilization.
+
+2. **Low Cost Impact**  
+   - Although the potential savings are modest (**$0.06/month**, **$0.73/year**), optimizing the configuration can enhance cost efficiency for larger-scale or similar workloads.
+
+---
+
+## Recommendations
+
+1. **Right-Size the Cluster**
+   - Reduce the cores and memory allocated to the driver and workers to match actual workload requirements.  
+
+2. **Enable Autoscaling**
+   - Configure autoscaling to dynamically adjust resource allocation based on workload demands, especially for bursty or unpredictable jobs.  
+
+3. **Analyze Workload Usage**
+   - Use monitoring tools to understand resource consumption trends and adjust configurations accordingly.
+
+4. **Consider Shared Resources**
+   - For jobs with minimal cost impact, consider running them on shared or smaller clusters to reduce overhead.
+
+---
+
+## Potential Savings
+
+- **Monthly Savings:** $0.06  
+- **Annualized Savings:** $0.73  
+
+While the immediate savings are small, implementing these changes ensures better scalability and cost management for future workloads.
+
+
+## Recommendations
+
+
+Use broadcast hints to broadcast the smaller table.    
+
+Broadcast hints in Databricks enable the forced broadcast of small tables to all worker nodes, optimizing join operations by reducing shuffling and network overhead.          
+This is especially useful when joining a large dataset with a smaller one, ensuring faster and more efficient query performance.     
+
+"""
+        mk_list.append({"key":"Inefficient join condition", "mk": body_text})
     else:
         assign_reviewer()
         value = """
