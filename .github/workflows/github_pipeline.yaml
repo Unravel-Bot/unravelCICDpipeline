@@ -44,7 +44,7 @@ jobs:
 
       - name: Run unravel github client script
         run: |
-          python new_client_2.py
+          python unravel_github_client.py
 
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
