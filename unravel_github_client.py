@@ -69,7 +69,8 @@ file_code_map['df.collect()'] = 'Avoid collecting all the data if we require onl
 
 # %%
 def get_api(api_url, api_token):
-    response = requests.get(api_url, verify=False, headers={"Authorization": api_token})
+    response = requests.get(api_url, verify=False, headers={"Authorization": api_token,   'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Safari/605.1.15',
+})
     print(response.content)
     json_obj = json.loads(response.content)
     return json_obj
