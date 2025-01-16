@@ -13,6 +13,9 @@ maxSKID = maxSKIDdf.select("SK_ACTUAL_PRODUCT_PACK").first()[0]
 maxSKID = int(maxSKID or 0)
 
 
+
+
+
 # COMMAND ----------
 
 temp1_df  = spark.sql("select distinct b.PIPCode,b.PackName,b.Sourcekey,b.BuyingMultiple,b.IsBuyingMultipleOptimisationIndicator,b.IsBuyingMultipleEnforcedIndicator,b.ReceivingQuantity,b.IsSpecialItemIndicator,b.DmdSpecial,b.LEGALCATEGORY,b.RunDateTime,b.status,b.SUPPLIERCODE,b.IsTenderLineIndicator,b.PharmacyProductSKUID from (select * from columbus_curation.curateadls_actualproductpack where PharmacyProductSKUID is not null) b, (select SourceKey,max(RunDateTime) as RunDateTime  from columbus_curation.curateadls_actualproductpack where PharmacyProductSKUID is not null group by SourceKey ) a  where a.RunDateTime = b.RunDateTime and a.SourceKey = b.SourceKey and b.PharmacyProductSKUID is not null")
