@@ -5,6 +5,8 @@ import glob
 from pyspark.sql.functions import explode
 import datetime
 
+
+
 # COMMAND ----------
 
 # MAGIC %run "../../Common/Upsert_to_Synapse"
