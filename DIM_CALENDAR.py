@@ -14,7 +14,6 @@ finalDF=spark.createDataFrame(sourceDF)
 finalDF.createOrReplaceTempView('dim_calendar')
 
 
-
 # COMMAND ----------
 
 # MAGIC %sql
