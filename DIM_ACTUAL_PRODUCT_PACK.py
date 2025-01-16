@@ -3,6 +3,7 @@
 
 # COMMAND ----------
 
+
 max_load_date=last_loaded_date("con_columbus.DIM_ACTUAL_PRODUCT_PACK")
 print(max_load_date)
 
